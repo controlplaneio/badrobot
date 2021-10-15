@@ -1,0 +1,24 @@
+---
+policies:
+  - type: commit
+    spec:
+      header:
+        length: 89
+        imperative: true
+        case: lower
+        invalidLastCharacters: .
+      body:
+        required: true
+      dco: false
+      gpg: true
+      spellcheck:
+        locale: GB
+      conventional:
+        types:
+          - chore
+          - docs
+          - feat
+          - refactor
+          - style
+          - fix
+          - test
