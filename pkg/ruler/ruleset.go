@@ -2,7 +2,7 @@ package ruler
 
 import (
 	"bytes"
-	"crypto/sha256"
+	// "crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -14,6 +14,7 @@ import (
 
 	"github.com/controlplaneio/badrobot/pkg/rules"
 	"github.com/ghodss/yaml"
+
 	// "github.com/in-toto/in-toto-golang/in_toto"
 	"github.com/instrumenta/kubeval/kubeval"
 	"github.com/thedevsaddam/gojsonq/v2"
@@ -38,7 +39,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	defaultNamespaceRule := Rule{
 		Predicate: rules.DefaultNamespace,
 		ID:        "DefaultNamespace",
-		Selector:  ".metadata .name != kube-system",
+		Selector:  ".metadata .name == kube-system",
 		Reason:    "Operators must be deployed into a dedicated namespace",
 		Kinds:     []string{"Namespace"},
 		Points:    -9,
@@ -234,7 +235,7 @@ func (rs *Ruleset) generateReport(fileName string, json []byte, schemaDir string
 	}
 
 	if appliedRules < 1 {
-		report.Message = "This resource kind is not supported by kubesec"
+		report.Message = "This resource kind is not supported by badrobot"
 	} else if report.Score >= 0 {
 		report.Message = fmt.Sprintf("Passed with a score of %v points", report.Score)
 	} else {
