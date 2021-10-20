@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/controlplaneio/kubesec/v2/pkg/rules"
+	"github.com/controlplaneio/badrobot/pkg/rules"
 	"github.com/ghodss/yaml"
 )
 
