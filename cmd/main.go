@@ -27,7 +27,7 @@ var rootCmd = &cobra.Command{
 Validate Kubernetes Operator resource security policies`,
 }
 
-// Execute runs kubesec
+// Execute runs badrobot
 func Execute() {
 	var err error
 
