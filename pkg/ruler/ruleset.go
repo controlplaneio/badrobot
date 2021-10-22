@@ -46,6 +46,16 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, defaultNamespaceRule)
 
+	starAllRoleRule := Rule{
+		Predicate: rules.StarAllRoleRule,
+		ID:        "StarAllRoleRule",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA role has full permissions on all resources against the Core API Group",
+		Kinds:     []string{"Role"},
+		Points:    -9,
+	}
+	list = append(list, starAllRoleRule)
+
 	return &Ruleset{
 		Rules:  list,
 		logger: logger,
