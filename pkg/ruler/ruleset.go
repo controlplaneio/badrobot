@@ -46,6 +46,99 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, defaultNamespaceRule)
 
+	noSecurityContextRule := Rule{
+		Predicate: rules.NoSecurityContext,
+		ID:        "NoSecurityContext",
+		Selector:  ".spec .template .spec .securityContext .containers[] ",
+		Reason:    "Operators should be deployed with securityContextApplied",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -9,
+	}
+	list = append(list, noSecurityContextRule)
+
+	readOnlyRootFilesystemRule := Rule{
+		Predicate: rules.ReadOnlyRootFilesystem,
+		ID:        "ReadOnlyRootFilesystem",
+		Selector:  "containers[] .securityContext .readOnlyRootFilesystem == true",
+		Reason:    "An immutable root filesystem can prevent malicious binaries being added to PATH and increase attack cost",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    1,
+		Advise:    3,
+	}
+	list = append(list, readOnlyRootFilesystemRule)
+
+	runAsNonRootRule := Rule{
+		Predicate: rules.RunAsNonRoot,
+		ID:        "RunAsNonRoot",
+		Selector:  "containers[] .securityContext .runAsNonRoot == true",
+		Reason:    "Force the running image to run as a non-root user to ensure least privilege",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    1,
+		Advise:    10,
+	}
+	list = append(list, runAsNonRootRule)
+
+	runAsUserRule := Rule{
+		Predicate: rules.RunAsUser,
+		ID:        "RunAsUser",
+		Selector:  "containers[] .securityContext .runAsUser -gt 10000",
+		Reason:    "Run as a high-UID user to avoid conflicts with the host's user table",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    1,
+		Advise:    4,
+	}
+	list = append(list, runAsUserRule)
+
+	privilegedRule := Rule{
+		Predicate: rules.Privileged,
+		ID:        "Privileged",
+		Selector:  "containers[] .securityContext .privileged == true",
+		Reason:    "Privileged containers can allow almost completely unrestricted host access",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -30,
+	}
+	list = append(list, privilegedRule)
+
+	capSysAdminRule := Rule{
+		Predicate: rules.CapSysAdmin,
+		ID:        "CapSysAdmin",
+		Selector:  "containers[] .securityContext .capabilities .add == SYS_ADMIN",
+		Reason:    "CAP_SYS_ADMIN is the most privileged capability and should always be avoided",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -30,
+	}
+	list = append(list, capSysAdminRule)
+
+	capDropAnyRule := Rule{
+		Predicate: rules.CapDropAny,
+		ID:        "CapDropAny",
+		Selector:  "containers[] .securityContext .capabilities .drop",
+		Reason:    "Reducing kernel capabilities available to a container limits its attack surface",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    1,
+	}
+	list = append(list, capDropAnyRule)
+
+	capDropAllRule := Rule{
+		Predicate: rules.CapDropAll,
+		ID:        "CapDropAll",
+		Selector:  "containers[] .securityContext .capabilities .drop | index(\"ALL\")",
+		Reason:    "Drop all capabilities and add only those required to reduce syscall attack surface",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    1,
+	}
+	list = append(list, capDropAllRule)
+
+	allowPrivilegeEscalation := Rule{
+		Predicate: rules.AllowPrivilegeEscalation,
+		ID:        "AllowPrivilegeEscalation",
+		Selector:  "containers[] .securityContext .allowPrivilegeEscalation == true",
+		Reason:    "",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -7,
+	}
+	list = append(list, allowPrivilegeEscalation)
+
 	starAllRoleRule := Rule{
 		Predicate: rules.StarAllRoleRule,
 		ID:        "StarAllRoleRule",
