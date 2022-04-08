@@ -21,8 +21,6 @@ func DefaultNamespace(json []byte) int {
 		From("subjects").
 		Only("namespace")
 
-	fmt.Printf("%v", jqCRB)
-
 	if jqNS != nil && strings.Contains(fmt.Sprintf("%v", jqNS), "kube-system") ||
 		jqNS != nil && strings.Contains(fmt.Sprintf("%v", jqNS), "default") ||
 		strings.Contains(fmt.Sprintf("%v", jqDeploy), "kube-system") ||

@@ -5,18 +5,16 @@ import (
 	// "crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"os"
 	"reflect"
 	"runtime"
 	"sort"
-	"strings"
 	"sync"
 
 	"github.com/controlplaneio/badrobot/pkg/rules"
 	"github.com/ghodss/yaml"
 
 	// "github.com/in-toto/in-toto-golang/in_toto"
-	"github.com/instrumenta/kubeval/kubeval"
+
 	"github.com/thedevsaddam/gojsonq/v2"
 	"go.uber.org/zap"
 )
@@ -266,40 +264,42 @@ func (rs *Ruleset) generateReport(fileName string, json []byte, schemaDir string
 
 	report.Object = getObjectName(json)
 
+	// KGW removed kubeval due to out of date schema validation breaking rule checks
+
 	// validate resource with kubeval
-	cfg := kubeval.NewDefaultConfig()
-	cfg.FileName = fileName
-	cfg.Strict = true
+	// cfg := kubeval.NewDefaultConfig()
+	// cfg.FileName = fileName
+	// cfg.Strict = true
 
-	if schemaDir != "" {
-		cfg.SchemaLocation = "file://" + schemaDir
-	} else if _, err := os.Stat("/schemas/kubernetes-json-schema/master/master-standalone"); !os.IsNotExist(err) {
-		cfg.SchemaLocation = "file:///schemas"
-	}
+	// if schemaDir != "" {
+	// 	cfg.SchemaLocation = "file://" + schemaDir
+	// } else if _, err := os.Stat("/schemas/kubernetes-json-schema/master/master-standalone"); !os.IsNotExist(err) {
+	// 	cfg.SchemaLocation = "file:///schemas"
+	// }
 
-	results, err := kubeval.Validate(json, cfg)
-	if err != nil {
-		if strings.Contains(err.Error(), "404 Not Found") {
-			report.Message = "This resource is invalid, unknown schema"
-		} else {
-			report.Message = err.Error()
-		}
-		return report
-	}
+	// results, err := kubeval.Validate(json, cfg)
+	// if err != nil {
+	// 	if strings.Contains(err.Error(), "404 Not Found") {
+	// 		report.Message = "This resource is invalid, unknown schema"
+	// 	} else {
+	// 		report.Message = err.Error()
+	// 	}
+	// 	return report
+	// }
 
-	for _, result := range results {
-		if len(result.Errors) > 0 {
-			for _, desc := range result.Errors {
-				report.Message += desc.String() + " "
-			}
-		} else if result.Kind == "" {
-			report.Message += "This resource is invalid, Kubernetes kind not found"
-		}
-	}
+	// for _, result := range results {
+	// 	if len(result.Errors) > 0 {
+	// 		for _, desc := range result.Errors {
+	// 			report.Message += desc.String() + " "
+	// 		}
+	// 	} else if result.Kind == "" {
+	// 		report.Message += "This resource is invalid, Kubernetes kind not found"
+	// 	}
+	// }
 
-	if len(report.Message) > 0 {
-		return report
-	}
+	// if len(report.Message) > 0 {
+	// 	return report
+	// }
 	report.Valid = true
 
 	// run rules in parallel
