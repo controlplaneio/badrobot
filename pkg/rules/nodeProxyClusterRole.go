@@ -1,4 +1,4 @@
-// OPR-R14-RBAC - ClusterRole can exec into Pods
+// OPR-R25-RBAC - ClusterRole has permissions over the Kubernetes API server proxy
 package rules
 
 import (
@@ -9,7 +9,7 @@ import (
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
-func ExecPodsClusterRole(json []byte) int {
+func NodeProxyClusterRole(json []byte) int {
 	rbac := 0
 
 	jqAPI := gojsonq.New().Reader(bytes.NewReader(json)).
@@ -25,25 +25,23 @@ func ExecPodsClusterRole(json []byte) int {
 		Only("verbs")
 
 	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods]")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "[nodes]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
 		rbac++
 	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods]")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "[nodes]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "get")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "create")) {
 		rbac++
 	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods/exec]")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "[nodes/proxy]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
 		rbac++
 	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods/exec]")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "[nodes/proxy]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "get")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "create")) {
 		rbac++
 	}
-
 	return rbac
-
 }

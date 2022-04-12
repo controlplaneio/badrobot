@@ -25,8 +25,6 @@ func ModifyPodLogsClusterRole(json []byte) int {
 		From("rules").
 		Only("verbs")
 
-	fmt.Sprintf("%v", jqResources)
-
 	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {

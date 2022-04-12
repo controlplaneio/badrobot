@@ -293,7 +293,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, admissionControllerClusterRoleRule)
 
-	// OPR-R22-RBAC - ClusterRole has full permissions over service accounts
+	// OPR-R22-RBAC - ClusterRole has permissions over service account token creation
 	serviceAccountClusterRoleRule := Rule{
 		Predicate: rules.ServiceAccountClusterRole,
 		ID:        "ServiceAccountClusterRole",
@@ -303,6 +303,39 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Points:    -9,
 	}
 	list = append(list, serviceAccountClusterRoleRule)
+
+	// OPR-R23-RBAC - ClusterRole has full permissions over persistent volumes
+	persistentVolumeClusterRoleRule := Rule{
+		Predicate: rules.PersistentVolumeClusterRole,
+		ID:        "PersistentVolumeClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has full permissions over persistent volumes",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -9,
+	}
+	list = append(list, persistentVolumeClusterRoleRule)
+
+	// OPR-R24-RBAC - ClusterRole has full permissions over network policies
+	networkPolicyClusterRoleRule := Rule{
+		Predicate: rules.NetworkPolicyClusterRole,
+		ID:        "NetworkPolicyClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has full permissions over network policies",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -9,
+	}
+	list = append(list, networkPolicyClusterRoleRule)
+
+	// OPR-R25-RBAC - ClusterRole has permissions over the Kubernetes API server proxy
+	nodeProxyClusterRoleRule := Rule{
+		Predicate: rules.NodeProxyClusterRole,
+		ID:        "NodeProxyClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has permissions the Kubernetes API server proxy",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -9,
+	}
+	list = append(list, nodeProxyClusterRoleRule)
 
 	return &Ruleset{
 		Rules:  list,

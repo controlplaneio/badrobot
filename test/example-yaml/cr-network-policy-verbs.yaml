@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: example-operator
+rules:
+- apiGroups:
+  - "networking.k8s.io"
+  resources:
+  - "networkpolicy"
+  verbs:
+  verbs:
+  - create
+  - update
+  - delete
+  - patch
+  - deletecollection

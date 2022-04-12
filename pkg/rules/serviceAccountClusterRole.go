@@ -1,4 +1,4 @@
-// OPR-R17-RBAC - ClusterRole has impersonate permissions
+// OPR-R22-RBAC - ClusterRole has permissions over service account token creation
 package rules
 
 import (
