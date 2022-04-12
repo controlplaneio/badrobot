@@ -6,13 +6,6 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - secrets
+  - serviceaccounts/token
   verbs:
-  - get
-  - list
   - create
-  - update
-  - delete
-  - patch
-  - watch
-  - deletecollection

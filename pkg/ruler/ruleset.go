@@ -293,6 +293,17 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, admissionControllerClusterRoleRule)
 
+	// OPR-R22-RBAC - ClusterRole has full permissions over service accounts
+	serviceAccountClusterRoleRule := Rule{
+		Predicate: rules.ServiceAccountClusterRole,
+		ID:        "ServiceAccountClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has permissions over service accounts to create token requests for existing service accounts",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -9,
+	}
+	list = append(list, serviceAccountClusterRoleRule)
+
 	return &Ruleset{
 		Rules:  list,
 		logger: logger,
