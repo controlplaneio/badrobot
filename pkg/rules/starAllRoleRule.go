@@ -23,11 +23,11 @@ func StarAllRoleRule(json []byte) int {
 		From("rules").
 		Only("verbs")
 
-	// fmt.Printf("%v", jqAPI)
-	// fmt.Printf("%v", jqResources)
-	// fmt.Printf("%v", jqVerbs)
+	fmt.Printf("%v", jqAPI)
+	fmt.Printf("%v", jqResources)
+	fmt.Printf("%v", jqVerbs)
 
-	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
+	if jqAPI == nil || (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
 		rbac++

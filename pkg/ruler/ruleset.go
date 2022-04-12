@@ -5,18 +5,16 @@ import (
 	// "crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"os"
 	"reflect"
 	"runtime"
 	"sort"
-	"strings"
 	"sync"
 
 	"github.com/controlplaneio/badrobot/pkg/rules"
 	"github.com/ghodss/yaml"
 
 	// "github.com/in-toto/in-toto-golang/in_toto"
-	"github.com/instrumenta/kubeval/kubeval"
+
 	"github.com/thedevsaddam/gojsonq/v2"
 	"go.uber.org/zap"
 )
@@ -45,6 +43,99 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Points:    -9,
 	}
 	list = append(list, defaultNamespaceRule)
+
+	noSecurityContextRule := Rule{
+		Predicate: rules.NoSecurityContext,
+		ID:        "NoSecurityContext",
+		Selector:  ".spec .template .spec .securityContext .containers[] ",
+		Reason:    "Operators should be deployed with securityContextApplied",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -9,
+	}
+	list = append(list, noSecurityContextRule)
+
+	readOnlyRootFilesystemRule := Rule{
+		Predicate: rules.ReadOnlyRootFilesystem,
+		ID:        "ReadOnlyRootFilesystem",
+		Selector:  "containers[] .securityContext .readOnlyRootFilesystem == true",
+		Reason:    "An immutable root filesystem can prevent malicious binaries being added to PATH and increase attack cost",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    1,
+		Advise:    3,
+	}
+	list = append(list, readOnlyRootFilesystemRule)
+
+	runAsNonRootRule := Rule{
+		Predicate: rules.RunAsNonRoot,
+		ID:        "RunAsNonRoot",
+		Selector:  "containers[] .securityContext .runAsNonRoot == true",
+		Reason:    "Force the running image to run as a non-root user to ensure least privilege",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    1,
+		Advise:    10,
+	}
+	list = append(list, runAsNonRootRule)
+
+	runAsUserRule := Rule{
+		Predicate: rules.RunAsUser,
+		ID:        "RunAsUser",
+		Selector:  "containers[] .securityContext .runAsUser -gt 10000",
+		Reason:    "Run as a high-UID user to avoid conflicts with the host's user table",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    1,
+		Advise:    4,
+	}
+	list = append(list, runAsUserRule)
+
+	privilegedRule := Rule{
+		Predicate: rules.Privileged,
+		ID:        "Privileged",
+		Selector:  "containers[] .securityContext .privileged == true",
+		Reason:    "Privileged containers can allow almost completely unrestricted host access",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -30,
+	}
+	list = append(list, privilegedRule)
+
+	capSysAdminRule := Rule{
+		Predicate: rules.CapSysAdmin,
+		ID:        "CapSysAdmin",
+		Selector:  "containers[] .securityContext .capabilities .add == SYS_ADMIN",
+		Reason:    "CAP_SYS_ADMIN is the most privileged capability and should always be avoided",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -30,
+	}
+	list = append(list, capSysAdminRule)
+
+	capDropAnyRule := Rule{
+		Predicate: rules.CapDropAny,
+		ID:        "CapDropAny",
+		Selector:  "containers[] .securityContext .capabilities .drop",
+		Reason:    "Reducing kernel capabilities available to a container limits its attack surface",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    1,
+	}
+	list = append(list, capDropAnyRule)
+
+	capDropAllRule := Rule{
+		Predicate: rules.CapDropAll,
+		ID:        "CapDropAll",
+		Selector:  "containers[] .securityContext .capabilities .drop | index(\"ALL\")",
+		Reason:    "Drop all capabilities and add only those required to reduce syscall attack surface",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    1,
+	}
+	list = append(list, capDropAllRule)
+
+	allowPrivilegeEscalation := Rule{
+		Predicate: rules.AllowPrivilegeEscalation,
+		ID:        "AllowPrivilegeEscalation",
+		Selector:  "containers[] .securityContext .allowPrivilegeEscalation == true",
+		Reason:    "",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -7,
+	}
+	list = append(list, allowPrivilegeEscalation)
 
 	starAllRoleRule := Rule{
 		Predicate: rules.StarAllRoleRule,
@@ -173,40 +264,42 @@ func (rs *Ruleset) generateReport(fileName string, json []byte, schemaDir string
 
 	report.Object = getObjectName(json)
 
+	// KGW removed kubeval due to out of date schema validation breaking rule checks
+
 	// validate resource with kubeval
-	cfg := kubeval.NewDefaultConfig()
-	cfg.FileName = fileName
-	cfg.Strict = true
+	// cfg := kubeval.NewDefaultConfig()
+	// cfg.FileName = fileName
+	// cfg.Strict = true
 
-	if schemaDir != "" {
-		cfg.SchemaLocation = "file://" + schemaDir
-	} else if _, err := os.Stat("/schemas/kubernetes-json-schema/master/master-standalone"); !os.IsNotExist(err) {
-		cfg.SchemaLocation = "file:///schemas"
-	}
+	// if schemaDir != "" {
+	// 	cfg.SchemaLocation = "file://" + schemaDir
+	// } else if _, err := os.Stat("/schemas/kubernetes-json-schema/master/master-standalone"); !os.IsNotExist(err) {
+	// 	cfg.SchemaLocation = "file:///schemas"
+	// }
 
-	results, err := kubeval.Validate(json, cfg)
-	if err != nil {
-		if strings.Contains(err.Error(), "404 Not Found") {
-			report.Message = "This resource is invalid, unknown schema"
-		} else {
-			report.Message = err.Error()
-		}
-		return report
-	}
+	// results, err := kubeval.Validate(json, cfg)
+	// if err != nil {
+	// 	if strings.Contains(err.Error(), "404 Not Found") {
+	// 		report.Message = "This resource is invalid, unknown schema"
+	// 	} else {
+	// 		report.Message = err.Error()
+	// 	}
+	// 	return report
+	// }
 
-	for _, result := range results {
-		if len(result.Errors) > 0 {
-			for _, desc := range result.Errors {
-				report.Message += desc.String() + " "
-			}
-		} else if result.Kind == "" {
-			report.Message += "This resource is invalid, Kubernetes kind not found"
-		}
-	}
+	// for _, result := range results {
+	// 	if len(result.Errors) > 0 {
+	// 		for _, desc := range result.Errors {
+	// 			report.Message += desc.String() + " "
+	// 		}
+	// 	} else if result.Kind == "" {
+	// 		report.Message += "This resource is invalid, Kubernetes kind not found"
+	// 	}
+	// }
 
-	if len(report.Message) > 0 {
-		return report
-	}
+	// if len(report.Message) > 0 {
+	// 	return report
+	// }
 	report.Valid = true
 
 	// run rules in parallel
