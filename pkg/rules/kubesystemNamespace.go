@@ -1,4 +1,4 @@
-// OPR-R1-NS - KubeSystem Namespace
+// OPR-R2-NS - KubeSystem Namespace
 
 package rules
 
@@ -10,7 +10,7 @@ import (
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
-func DefaultNamespace(json []byte) int {
+func KubeSystemNamespace(json []byte) int {
 	namespace := 0
 
 	jqNS := gojsonq.New().Reader(bytes.NewReader(json)).
@@ -23,9 +23,9 @@ func DefaultNamespace(json []byte) int {
 		From("subjects").
 		Only("namespace")
 
-	if strings.Contains(fmt.Sprintf("%v", jqNS), "default") ||
-		strings.Contains(fmt.Sprintf("%v", jqDeploy), "default") ||
-		strings.Contains(fmt.Sprintf("%v", jqCRB), "default") {
+	if strings.Contains(fmt.Sprintf("%v", jqNS), "kube-system") ||
+		strings.Contains(fmt.Sprintf("%v", jqDeploy), "kube-system") ||
+		strings.Contains(fmt.Sprintf("%v", jqCRB), "kube-system") {
 		namespace++
 	}
 
