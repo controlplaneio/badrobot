@@ -216,6 +216,39 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, execPodsClusterRoleRule)
 
+	// OPR-R15-RBAC - ClusterRole has escalate permissions
+	escalateClusterRoleRule := Rule{
+		Predicate: rules.EscalateClusterRole,
+		ID:        "EscalateClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has escalate permissions",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -9,
+	}
+	list = append(list, escalateClusterRoleRule)
+
+	// OPR-R16-RBAC - ClusterRole has bind permissions
+	bindClusterRoleRule := Rule{
+		Predicate: rules.BindClusterRole,
+		ID:        "BindClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has bind permissions",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -9,
+	}
+	list = append(list, bindClusterRoleRule)
+
+	// OPR-R17-RBAC - ClusterRole has impersonate permissions
+	impersonateClusterRoleRule := Rule{
+		Predicate: rules.ImpersonateClusterRole,
+		ID:        "ImpersonateClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has impersonate permissions",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -30,
+	}
+	list = append(list, impersonateClusterRoleRule)
+
 	return &Ruleset{
 		Rules:  list,
 		logger: logger,
