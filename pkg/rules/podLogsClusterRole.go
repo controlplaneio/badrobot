@@ -1,4 +1,4 @@
-// OPR-R15-RBAC - ClusterRole has escalate permissions
+// OPR-R18-RBAC - ClusterRole can modify pod logs
 package rules
 
 import (

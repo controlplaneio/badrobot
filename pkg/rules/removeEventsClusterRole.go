@@ -1,4 +1,4 @@
-// OPR-R14-RBAC - ClusterRole can exec into Pods
+// OPR-R19-RBAC - ClusterRole can remove Kubernetes events
 package rules
 
 import (

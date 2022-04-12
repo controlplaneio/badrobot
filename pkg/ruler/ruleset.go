@@ -271,6 +271,28 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, removeEventsClusterRoleRule)
 
+	// OPR-R20-RBAC - ClusterRole has full permissions over any custom resource definitions
+	customResourceClusterRoleRule := Rule{
+		Predicate: rules.CustomResourceClusterRole,
+		ID:        "CustomResourceClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has permissions over any Custom Resource",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -1,
+	}
+	list = append(list, customResourceClusterRoleRule)
+
+	// OPR-R21-RBAC - ClusterRole has full permissions over admission controllers
+	admissionControllerClusterRoleRule := Rule{
+		Predicate: rules.AdmissionControllerClusterRole,
+		ID:        "AdmissionControllerClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has full permissions over Admission Controllers",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -9,
+	}
+	list = append(list, admissionControllerClusterRoleRule)
+
 	return &Ruleset{
 		Rules:  list,
 		logger: logger,
