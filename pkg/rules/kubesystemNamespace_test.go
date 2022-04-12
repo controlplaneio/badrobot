@@ -1,8 +1,9 @@
 package rules
 
 import (
-	"github.com/ghodss/yaml"
 	"testing"
+
+	"github.com/ghodss/yaml"
 )
 
 // -- TODO KGW Write tests
@@ -27,13 +28,13 @@ metadata:
 	}
 }
 
-func Test_DefaultNamespace(t *testing.T) {
+func Test_KubeSystemNamespace(t *testing.T) {
 	var data = `
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: default
+  name: kube-system
 `
 
 	json, err := yaml.YAMLToJSON([]byte(data))
@@ -41,7 +42,7 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	namespace := DefaultNamespace(json)
+	namespace := KubeSystemNamespace(json)
 	if namespace != 1 {
 		t.Errorf("Got %v namespace wanted %v", namespace, 1)
 	}

@@ -1,5 +1,4 @@
-// OPR-R1-NS - KubeSystem Namespace
-
+// OPR-R1-NS - default namespace
 package rules
 
 import (

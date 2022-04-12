@@ -1,5 +1,4 @@
-// OPR-R2-NS - KubeSystem Namespace
-
+// OPR-R2-NS - kube-system namespace
 package rules
 
 import (

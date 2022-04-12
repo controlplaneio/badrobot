@@ -1,3 +1,4 @@
+// OPR-R10-RBAC - ClusterRole has full permissions over all resources
 package rules
 
 import (
@@ -8,7 +9,7 @@ import (
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
-func StarAllRoleRule(json []byte) int {
+func StarAllClusterRole(json []byte) int {
 	rbac := 0
 
 	jqAPI := gojsonq.New().Reader(bytes.NewReader(json)).
@@ -27,7 +28,7 @@ func StarAllRoleRule(json []byte) int {
 	fmt.Printf("%v", jqResources)
 	fmt.Printf("%v", jqVerbs)
 
-	if jqAPI == nil || (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
+	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "*")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
 		rbac++

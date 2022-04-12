@@ -34,6 +34,7 @@ func (e *InvalidInputError) Error() string {
 func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	list := make([]Rule, 0)
 
+	// OPR-R1-NS - default namespace
 	defaultNamespaceRule := Rule{
 		Predicate: rules.DefaultNamespace,
 		ID:        "DefaultNamespace",
@@ -44,6 +45,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, defaultNamespaceRule)
 
+	// OPR-R2-NS - kube-system namespace
 	kubesystemNamespaceRule := Rule{
 		Predicate: rules.KubeSystemNamespace,
 		ID:        "KubeSystemNamespace",
@@ -54,6 +56,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, kubesystemNamespaceRule)
 
+	// OPR-R3-SC - No securityContext
 	noSecurityContextRule := Rule{
 		Predicate: rules.NoSecurityContext,
 		ID:        "NoSecurityContext",
@@ -147,15 +150,38 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, allowPrivilegeEscalation)
 
-	starAllRoleRule := Rule{
-		Predicate: rules.StarAllRoleRule,
-		ID:        "StarAllRoleRule",
-		Selector:  ".rules .apiGroups .resources .verbs",
-		Reason:    "The Operator SA role has full permissions on all resources against the Core API Group",
-		Kinds:     []string{"Role"},
-		Points:    -9,
+	// OPR-R9-RBAC - Runs as Cluster Admin
+	clusterAdminRule := Rule{
+		Predicate: rules.ClusterAdmin,
+		ID:        "ClusterAdmin",
+		Selector:  ".roleRef .name",
+		Reason:    "The Operator is using Kubernetes native cluster admin role. Operators must use a dedicated cluster role",
+		Kinds:     []string{"ClusterRoleBinding"},
+		Points:    -30,
 	}
-	list = append(list, starAllRoleRule)
+	list = append(list, clusterAdminRule)
+
+	// OPR-R10-RBAC - ClusterRole has full permissions over all resources
+	starAllClusterRoleRule := Rule{
+		Predicate: rules.StarAllClusterRole,
+		ID:        "StarAllClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has full permissions on all resources in the cluster",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -30,
+	}
+	list = append(list, starAllClusterRoleRule)
+
+	// OPR-R11-RBAC - ClusterRole has full permissions over all CoreAPI resources
+	starAllCoreAPIClusterRoleRule := Rule{
+		Predicate: rules.StarAllCoreAPIClusterRole,
+		ID:        "StarAllCoreAPIClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has full permissions on all CoreAPI resources in the cluster",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -30,
+	}
+	list = append(list, starAllCoreAPIClusterRoleRule)
 
 	return &Ruleset{
 		Rules:  list,
