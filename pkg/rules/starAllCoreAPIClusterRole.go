@@ -24,17 +24,23 @@ func StarAllCoreAPIClusterRole(json []byte) int {
 		From("rules").
 		Only("verbs")
 
-	// fmt.Printf("%v", jqAPI)
-	// fmt.Printf("%v", jqResources)
-	// fmt.Printf("%v", jqVerbs)
-
-	if jqAPI == nil || (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
+	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
 		rbac++
+	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "get")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "create")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "update")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "list")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "patch")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "watch")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "delete")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "deletecollection")) {
+		rbac++
 	}
 
-	// fmt.Printf("%v", rbac)
 	return rbac
 
 }

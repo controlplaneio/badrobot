@@ -4,8 +4,15 @@ metadata:
   name: example-operator
 rules:
 - apiGroups:
-  - app
+  - ""
   resources:
-  - pods
+  - "*"
   verbs:
+  - get
+  - create
+  - list
+  - patch
   - update
+  - watch
+  - delete
+  - deletecollection

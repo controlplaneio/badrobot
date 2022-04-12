@@ -194,6 +194,17 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, starClusterRoleAndBindingsRule)
 
+	// OPR-R13-RBAC - ClusterRole has access to Kubernetes secrets
+	secretsClusterRoleRule := Rule{
+		Predicate: rules.SecretsClusterRole,
+		ID:        "SecretsClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has access to all secrets",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -9,
+	}
+	list = append(list, secretsClusterRoleRule)
+
 	return &Ruleset{
 		Rules:  list,
 		logger: logger,
