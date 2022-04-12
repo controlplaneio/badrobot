@@ -39,9 +39,9 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	defaultNamespaceRule := Rule{
 		Predicate: rules.DefaultNamespace,
 		ID:        "DefaultNamespace",
-		Selector:  ".metadata .name == kube-system",
-		Reason:    "Operators must be deployed into a dedicated namespace",
-		Kinds:     []string{"Namespace"},
+		Selector:  ".metadata .name == kube-system .name == default .namespace == kube-system .namespace == default .subjects",
+		Reason:    "Operators should be deployed into a dedicated namespace",
+		Kinds:     []string{"Namespace", "Deployment", "ClusterRoleBinding"},
 		Points:    -9,
 	}
 	list = append(list, defaultNamespaceRule)

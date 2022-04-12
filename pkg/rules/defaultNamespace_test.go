@@ -13,7 +13,7 @@ func Test_NonDefaultNamespace(t *testing.T) {
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: example
+  name: system
 `
 
 	json, err := yaml.YAMLToJSON([]byte(data))
@@ -21,13 +21,13 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	operator := DefaultNamespace(json)
-	if operator != 0 {
-		t.Errorf("Got %v operator wanted %v", operator, 0)
+	namespace := NonDefaultNamespace(json)
+	if namespace != 1 {
+		t.Errorf("Got %v namespace wanted %v", namespace, 1)
 	}
 }
 
-func Test_DefaultNamespace(t *testing.T) {
+func Test_KubeSystemNamespace(t *testing.T) {
 	var data = `
 ---
 apiVersion: v1
@@ -41,8 +41,28 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	operator := DefaultNamespace(json)
-	if operator != 1 {
-		t.Errorf("Got %v operator wanted %v", operator, 1)
+	namespace := KubeSystemNamespace(json)
+	if namespace != 1 {
+		t.Errorf("Got %v namespace wanted %v", namespace, 1)
+	}
+}
+
+func Test_DefaultNamespace(t *testing.T) {
+	var data = `
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+`
+
+	json, err := yaml.YAMLToJSON([]byte(data))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	namespace := DefaultNamespace(json)
+	if namespace != 1 {
+		t.Errorf("Got %v namespace wanted %v", namespace, 1)
 	}
 }
