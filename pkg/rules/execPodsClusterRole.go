@@ -18,7 +18,7 @@ func ExecPodsClusterRole(json []byte) int {
 
 	jqResources := gojsonq.New().Reader(bytes.NewReader(json)).
 		From("rules").
-		Select("resources").Get()
+		Only("resources")
 
 	jqVerbs := gojsonq.New().Reader(bytes.NewReader(json)).
 		From("rules").

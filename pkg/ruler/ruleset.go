@@ -260,6 +260,17 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, modifyPodLogsClusterRoleRule)
 
+	// OPR-R19-RBAC - ClusterRole can remove Kubernetes events
+	removeEventsClusterRoleRule := Rule{
+		Predicate: rules.RemoveEventsClusterRole,
+		ID:        "RemoveEventsClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has permissions to delete Kubernetes Events",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -9,
+	}
+	list = append(list, removeEventsClusterRoleRule)
+
 	return &Ruleset{
 		Rules:  list,
 		logger: logger,
