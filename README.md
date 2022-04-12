@@ -1,12 +1,11 @@
 # BadRobot (Kubernetes Operator Audit Tool)
 
----
-
-- [Badrobot Overview](#overview)
+- [Overview](#overview)
   - [Structure](#structure)
-  - [Roadmap](#roadmap)
+  - [Rulesets](#rulesets)
 - [Command line Usage](#command-line-usage)
 
+---
 ## Overview
 Badrobot is the internal R&D project codename for a Kubernetes Operator Audit Tool. The purpose of the project is to create an open source tool which audits Public or Private Kubernetes Operators. As Operators can have a large scope the initial version will be focused on specific resources and Operators which conform to the Operator SDK. If successful, the tool could be expanded to identify any resources which are associated with an Operator.
 
@@ -45,6 +44,7 @@ The tool is supposed be a static code analyser which can run against a code repo
 | OPR-R24-RBAC | ClusterRole has full permissions over network policies | The Operator is deployed with access to cluster wide network policies, allowing the modification of network routes. An adversary can leverage these permissions to access unauthorised resources. | Low |
 | OPR-R25-RBAC | ClusterRole has permissions over the Kubernetes API server proxy | The Operator is deployed with permissions over the proxy sub resource of the node, allowing command execution on every pod on the node via the Kubelet API. An adversary can leverage this permission on the Operator to run custom workloads on several pods on the node. | High |
 
+---
 ## Command Line Usage
 ```bash
 $ badrobot scan operator-manifest.yaml

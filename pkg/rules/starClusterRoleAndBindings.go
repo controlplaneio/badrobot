@@ -1,4 +1,4 @@
-// OPR-R11-RBAC - ClusterRole has full permissions over all CoreAPI resources
+// OPR-R12-RBAC - ClusterRole has full permissions over ClusterRoles and ClusterRoleBindings
 package rules
 
 import (
@@ -9,7 +9,7 @@ import (
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
-func StarAllCoreAPIClusterRole(json []byte) int {
+func StarClusterRoleAndBindings(json []byte) int {
 	rbac := 0
 
 	jqAPI := gojsonq.New().Reader(bytes.NewReader(json)).
@@ -28,8 +28,9 @@ func StarAllCoreAPIClusterRole(json []byte) int {
 	// fmt.Printf("%v", jqResources)
 	// fmt.Printf("%v", jqVerbs)
 
-	if jqAPI == nil || (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
+	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "rbac.authorization.k8s.io")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "clusterroles")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "clusterrolebindings")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
 		rbac++
 	}

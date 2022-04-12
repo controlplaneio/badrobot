@@ -183,6 +183,17 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, starAllCoreAPIClusterRoleRule)
 
+	// OPR-R12-RBAC - ClusterRole has full permissions over ClusterRoles and ClusterRoleBindings
+	starClusterRoleAndBindingsRule := Rule{
+		Predicate: rules.StarClusterRoleAndBindings,
+		ID:        "StarClusterRoleAndBindings",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has full permissions over ClusterRoles and ClusterRoleBindings",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -9,
+	}
+	list = append(list, starClusterRoleAndBindingsRule)
+
 	return &Ruleset{
 		Rules:  list,
 		logger: logger,
