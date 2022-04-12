@@ -6,6 +6,6 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - configmaps
+  - pods/exec
   verbs:
   - "*"

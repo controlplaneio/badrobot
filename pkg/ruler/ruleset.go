@@ -205,6 +205,17 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, secretsClusterRoleRule)
 
+	// OPR-R14-RBAC - ClusterRole can exec into Pods
+	execPodsClusterRoleRule := Rule{
+		Predicate: rules.ExecPodsClusterRole,
+		ID:        "ExecPodsClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has permissions to exec into any pod in the cluster",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -9,
+	}
+	list = append(list, execPodsClusterRoleRule)
+
 	return &Ruleset{
 		Rules:  list,
 		logger: logger,
