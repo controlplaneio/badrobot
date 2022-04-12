@@ -15,13 +15,10 @@ func ClusterAdmin(json []byte) int {
 	jqCRB := gojsonq.New().Reader(bytes.NewReader(json)).
 		From("roleRef.name").Get()
 
-	fmt.Printf("%v", jqCRB)
-
 	if strings.Contains(fmt.Sprintf("%v", jqCRB), "cluster-admin") {
 		rbac++
 	}
 
-	fmt.Printf("%v", rbac)
 	return rbac
 
 }

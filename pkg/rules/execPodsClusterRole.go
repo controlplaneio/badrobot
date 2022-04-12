@@ -18,27 +18,31 @@ func ExecPodsClusterRole(json []byte) int {
 
 	jqResources := gojsonq.New().Reader(bytes.NewReader(json)).
 		From("rules").
-		Only("resources")
+		Select("resources").Get()
 
 	jqVerbs := gojsonq.New().Reader(bytes.NewReader(json)).
 		From("rules").
 		Only("verbs")
 
+	// fmt.Printf("%v", jqAPI)
+	// fmt.Printf("%v", jqResources)
+	// fmt.Printf("%v", jqVerbs)
+
 	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "pods")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
 		rbac++
 	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "pods")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "get")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "create")) {
 		rbac++
 	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "pods/exec")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods/exec]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
 		rbac++
 	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "pods/exec")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods/exec]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "get")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "create")) {
 		rbac++

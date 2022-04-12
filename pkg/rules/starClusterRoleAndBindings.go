@@ -24,10 +24,6 @@ func StarClusterRoleAndBindings(json []byte) int {
 		From("rules").
 		Only("verbs")
 
-	// fmt.Printf("%v", jqAPI)
-	// fmt.Printf("%v", jqResources)
-	// fmt.Printf("%v", jqVerbs)
-
 	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "rbac.authorization.k8s.io")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqResources), "clusterroles")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqResources), "clusterrolebindings")) &&
@@ -35,7 +31,6 @@ func StarClusterRoleAndBindings(json []byte) int {
 		rbac++
 	}
 
-	// fmt.Printf("%v", rbac)
 	return rbac
 
 }

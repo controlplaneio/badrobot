@@ -249,6 +249,17 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, impersonateClusterRoleRule)
 
+	// OPR-R18-RBAC - ClusterRole can modify pod logs
+	modifyPodLogsClusterRoleRule := Rule{
+		Predicate: rules.ModifyPodLogsClusterRole,
+		ID:        "ModifyPodLogsClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has permissions to modify pod logs",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -1,
+	}
+	list = append(list, modifyPodLogsClusterRoleRule)
+
 	return &Ruleset{
 		Rules:  list,
 		logger: logger,

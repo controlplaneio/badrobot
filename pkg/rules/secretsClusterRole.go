@@ -24,10 +24,6 @@ func SecretsClusterRole(json []byte) int {
 		From("rules").
 		Only("verbs")
 
-	// fmt.Printf("%v", jqAPI)
-	// fmt.Printf("%v", jqResources)
-	// fmt.Printf("%v", jqVerbs)
-
 	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqResources), "secrets")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
