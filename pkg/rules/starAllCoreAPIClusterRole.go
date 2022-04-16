@@ -4,6 +4,7 @@ package rules
 import (
 	"bytes"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/thedevsaddam/gojsonq/v2"
@@ -13,34 +14,40 @@ func StarAllCoreAPIClusterRole(json []byte) int {
 	rbac := 0
 
 	jqAPI := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules").
-		Only("apiGroups")
+		From("rules")
 
-	jqResources := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules").
-		Only("resources")
+	numElementsStr := fmt.Sprintf("%v", jqAPI.Count())
+	numElementsVar, _ := strconv.Atoi(numElementsStr)
 
-	jqVerbs := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules").
-		Only("verbs")
+	// fmt.Print(numElementsVar)
 
-	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "get")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "create")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "update")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "list")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "patch")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "watch")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "delete")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "deletecollection")) {
-		rbac++
+	for i := 1; i <= numElementsVar; i++ {
+		apiGroups := fmt.Sprintf("%v", jqAPI.Nth(i).(map[string]interface{})["apiGroups"])
+		resources := fmt.Sprintf("%v", jqAPI.Nth(i).(map[string]interface{})["resources"])
+		verbs := fmt.Sprintf("%v", jqAPI.Nth(i).(map[string]interface{})["verbs"])
+
+		// fmt.Printf("%v", apiGroups)
+		// fmt.Printf("%v", resources)
+		// fmt.Printf("%v", verbs)
+
+		if strings.Contains(fmt.Sprintf("%v", apiGroups), "[]") &&
+			strings.Contains(fmt.Sprintf("%v", resources), "*") &&
+			strings.Contains(fmt.Sprintf("%v", verbs), "*") {
+			rbac++
+		} else if strings.Contains(fmt.Sprintf("%v", apiGroups), "[]") &&
+			strings.Contains(fmt.Sprintf("%v", resources), "*") &&
+			strings.Contains(fmt.Sprintf("%v", verbs), "get") &&
+			(strings.Contains(fmt.Sprintf("%v", verbs), "create")) &&
+			(strings.Contains(fmt.Sprintf("%v", verbs), "update")) &&
+			(strings.Contains(fmt.Sprintf("%v", verbs), "list")) &&
+			(strings.Contains(fmt.Sprintf("%v", verbs), "patch")) &&
+			(strings.Contains(fmt.Sprintf("%v", verbs), "watch")) &&
+			(strings.Contains(fmt.Sprintf("%v", verbs), "delete")) &&
+			(strings.Contains(fmt.Sprintf("%v", verbs), "deletecollection")) {
+			rbac++
+		}
+
 	}
 
 	return rbac
-
 }
