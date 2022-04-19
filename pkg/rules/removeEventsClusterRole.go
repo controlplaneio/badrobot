@@ -1,4 +1,4 @@
-// OPR-R19-RBAC - ClusterRole can remove Kubernetes events
+// OPR-R20-RBAC - ClusterRole can remove Kubernetes events
 package rules
 
 import (
@@ -23,10 +23,6 @@ func RemoveEventsClusterRole(json []byte) int {
 	jqVerbs := gojsonq.New().Reader(bytes.NewReader(json)).
 		From("rules").
 		Only("verbs")
-
-	// fmt.Printf("%v", jqAPI)
-	// fmt.Printf("%v", jqResources)
-	// fmt.Printf("%v", jqVerbs)
 
 	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqResources), "[events]")) &&

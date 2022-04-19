@@ -1,4 +1,4 @@
-// OPR-R20-RBAC - ClusterRole has full permissions over any custom resource definitions
+// OPR-R21-RBAC - ClusterRole has full permissions over any custom resource definitions
 package rules
 
 import (

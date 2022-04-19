@@ -67,90 +67,73 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, noSecurityContextRule)
 
-	readOnlyRootFilesystemRule := Rule{
-		Predicate: rules.ReadOnlyRootFilesystem,
-		ID:        "ReadOnlyRootFilesystem",
-		Selector:  "containers[] .securityContext .readOnlyRootFilesystem == true",
-		Reason:    "An immutable root filesystem can prevent malicious binaries being added to PATH and increase attack cost",
-		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    1,
-		Advise:    3,
-	}
-	list = append(list, readOnlyRootFilesystemRule)
-
-	runAsNonRootRule := Rule{
-		Predicate: rules.RunAsNonRoot,
-		ID:        "RunAsNonRoot",
-		Selector:  "containers[] .securityContext .runAsNonRoot == true",
-		Reason:    "Force the running image to run as a non-root user to ensure least privilege",
-		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    1,
-		Advise:    10,
-	}
-	list = append(list, runAsNonRootRule)
-
-	runAsUserRule := Rule{
-		Predicate: rules.RunAsUser,
-		ID:        "RunAsUser",
-		Selector:  "containers[] .securityContext .runAsUser -gt 10000",
-		Reason:    "Run as a high-UID user to avoid conflicts with the host's user table",
-		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    1,
-		Advise:    4,
-	}
-	list = append(list, runAsUserRule)
-
-	privilegedRule := Rule{
-		Predicate: rules.Privileged,
-		ID:        "Privileged",
-		Selector:  "containers[] .securityContext .privileged == true",
-		Reason:    "Privileged containers can allow almost completely unrestricted host access",
-		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    -30,
-	}
-	list = append(list, privilegedRule)
-
-	capSysAdminRule := Rule{
-		Predicate: rules.CapSysAdmin,
-		ID:        "CapSysAdmin",
-		Selector:  "containers[] .securityContext .capabilities .add == SYS_ADMIN",
-		Reason:    "CAP_SYS_ADMIN is the most privileged capability and should always be avoided",
-		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    -30,
-	}
-	list = append(list, capSysAdminRule)
-
-	capDropAnyRule := Rule{
-		Predicate: rules.CapDropAny,
-		ID:        "CapDropAny",
-		Selector:  "containers[] .securityContext .capabilities .drop",
-		Reason:    "Reducing kernel capabilities available to a container limits its attack surface",
-		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    1,
-	}
-	list = append(list, capDropAnyRule)
-
-	capDropAllRule := Rule{
-		Predicate: rules.CapDropAll,
-		ID:        "CapDropAll",
-		Selector:  "containers[] .securityContext .capabilities .drop | index(\"ALL\")",
-		Reason:    "Drop all capabilities and add only those required to reduce syscall attack surface",
-		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    1,
-	}
-	list = append(list, capDropAllRule)
-
+	// OPR-R4-SC - securityContext set to allowPrivilegeEscalation: true
 	allowPrivilegeEscalation := Rule{
 		Predicate: rules.AllowPrivilegeEscalation,
 		ID:        "AllowPrivilegeEscalation",
-		Selector:  "containers[] .securityContext .allowPrivilegeEscalation == true",
-		Reason:    "",
+		Selector:  ".spec .containers[] .securityContext .allowPrivilegeEscalation == true",
+		Reason:    "Operators should not deploy with allowPrivilegeEscalation: true",
 		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
 		Points:    -7,
 	}
 	list = append(list, allowPrivilegeEscalation)
 
-	// OPR-R9-RBAC - Runs as Cluster Admin
+	// OPR-R5-SC - securityContext set to privileged: true
+	privilegedRule := Rule{
+		Predicate: rules.Privileged,
+		ID:        "Privileged",
+		Selector:  ".spec .containers[] .securityContext .privileged == true",
+		Reason:    "Operators should not deploy with privileged: true",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -30,
+	}
+	list = append(list, privilegedRule)
+
+	// OPR-R6-SC - securityContext set to readOnlyRootFilesystem: false
+	readOnlyRootFilesystemRule := Rule{
+		Predicate: rules.ReadOnlyRootFilesystem,
+		ID:        "ReadOnlyRootFilesystem",
+		Selector:  ".spec .containers[] .securityContext .readOnlyRootFilesystem == false",
+		Reason:    "Operators should not deploy with readOnlyRootFilesystem: true",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -7,
+	}
+	list = append(list, readOnlyRootFilesystemRule)
+
+	// OPR-R7-SC - securityContext set to runAsNonRoot: false
+	runAsNonRootRule := Rule{
+		Predicate: rules.RunAsNonRoot,
+		ID:        "RunAsNonRoot",
+		Selector:  ".spec .containers[] .securityContext .runAsNonRoot == false",
+		Reason:    "Operators should not run as the root user",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -7,
+	}
+	list = append(list, runAsNonRootRule)
+
+	// OPR-R8-SC - securityContext set to runAsUser: 0
+	runAsUserRule := Rule{
+		Predicate: rules.RunAsUser,
+		ID:        "RunAsUser",
+		Selector:  ".spec containers[] .securityContext .runAsUser -gt 0",
+		Reason:    "Operators should not run as the root user (UID = 0)",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -7,
+	}
+	list = append(list, runAsUserRule)
+
+	// OPR-R9-SC - securityContext adds CAP_SYS_ADMIN Linux capability
+	capSysAdminRule := Rule{
+		Predicate: rules.CapSysAdmin,
+		ID:        "CapSysAdmin",
+		Selector:  "containers[] .securityContext .capabilities .add == SYS_ADMIN",
+		Reason:    "CAP_SYS_ADMIN is the most privileged capability and where possible disabled for Operators",
+		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
+		Points:    -30,
+	}
+	list = append(list, capSysAdminRule)
+
+	// OPR-R10-RBAC - Runs as Cluster Admin
 	clusterAdminRule := Rule{
 		Predicate: rules.ClusterAdmin,
 		ID:        "ClusterAdmin",
@@ -161,7 +144,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, clusterAdminRule)
 
-	// OPR-R10-RBAC - ClusterRole has full permissions over all resources
+	// OPR-R11-RBAC - ClusterRole has full permissions over all resources
 	starAllClusterRoleRule := Rule{
 		Predicate: rules.StarAllClusterRole,
 		ID:        "StarAllClusterRole",
@@ -172,7 +155,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, starAllClusterRoleRule)
 
-	// OPR-R11-RBAC - ClusterRole has full permissions over all CoreAPI resources
+	// OPR-R12-RBAC - ClusterRole has full permissions over all CoreAPI resources
 	starAllCoreAPIClusterRoleRule := Rule{
 		Predicate: rules.StarAllCoreAPIClusterRole,
 		ID:        "StarAllCoreAPIClusterRole",
@@ -183,7 +166,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, starAllCoreAPIClusterRoleRule)
 
-	// OPR-R12-RBAC - ClusterRole has full permissions over ClusterRoles and ClusterRoleBindings
+	// OPR-R13-RBAC - ClusterRole has full permissions over ClusterRoles and ClusterRoleBindings
 	starClusterRoleAndBindingsRule := Rule{
 		Predicate: rules.StarClusterRoleAndBindings,
 		ID:        "StarClusterRoleAndBindings",
@@ -194,7 +177,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, starClusterRoleAndBindingsRule)
 
-	// OPR-R13-RBAC - ClusterRole has access to Kubernetes secrets
+	// OPR-R14-RBAC - ClusterRole has access to Kubernetes secrets
 	secretsClusterRoleRule := Rule{
 		Predicate: rules.SecretsClusterRole,
 		ID:        "SecretsClusterRole",
@@ -205,7 +188,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, secretsClusterRoleRule)
 
-	// OPR-R14-RBAC - ClusterRole can exec into Pods
+	// OPR-R15-RBAC - ClusterRole can exec into Pods
 	execPodsClusterRoleRule := Rule{
 		Predicate: rules.ExecPodsClusterRole,
 		ID:        "ExecPodsClusterRole",
@@ -216,7 +199,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, execPodsClusterRoleRule)
 
-	// OPR-R15-RBAC - ClusterRole has escalate permissions
+	// OPR-R16-RBAC - ClusterRole has escalate permissions
 	escalateClusterRoleRule := Rule{
 		Predicate: rules.EscalateClusterRole,
 		ID:        "EscalateClusterRole",
@@ -227,7 +210,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, escalateClusterRoleRule)
 
-	// OPR-R16-RBAC - ClusterRole has bind permissions
+	// OPR-R17-RBAC - ClusterRole has bind permissions
 	bindClusterRoleRule := Rule{
 		Predicate: rules.BindClusterRole,
 		ID:        "BindClusterRole",
@@ -238,7 +221,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, bindClusterRoleRule)
 
-	// OPR-R17-RBAC - ClusterRole has impersonate permissions
+	// OPR-R18-RBAC - ClusterRole has impersonate permissions
 	impersonateClusterRoleRule := Rule{
 		Predicate: rules.ImpersonateClusterRole,
 		ID:        "ImpersonateClusterRole",
@@ -249,7 +232,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, impersonateClusterRoleRule)
 
-	// OPR-R18-RBAC - ClusterRole can modify pod logs
+	// OPR-R19-RBAC - ClusterRole can modify pod logs
 	modifyPodLogsClusterRoleRule := Rule{
 		Predicate: rules.ModifyPodLogsClusterRole,
 		ID:        "ModifyPodLogsClusterRole",
@@ -260,7 +243,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, modifyPodLogsClusterRoleRule)
 
-	// OPR-R19-RBAC - ClusterRole can remove Kubernetes events
+	// OPR-R20-RBAC - ClusterRole can remove Kubernetes events
 	removeEventsClusterRoleRule := Rule{
 		Predicate: rules.RemoveEventsClusterRole,
 		ID:        "RemoveEventsClusterRole",
@@ -271,7 +254,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, removeEventsClusterRoleRule)
 
-	// OPR-R20-RBAC - ClusterRole has full permissions over any custom resource definitions
+	// OPR-R21-RBAC - ClusterRole has full permissions over any custom resource definitions
 	customResourceClusterRoleRule := Rule{
 		Predicate: rules.CustomResourceClusterRole,
 		ID:        "CustomResourceClusterRole",
@@ -282,7 +265,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, customResourceClusterRoleRule)
 
-	// OPR-R21-RBAC - ClusterRole has full permissions over admission controllers
+	// OPR-R22-RBAC - ClusterRole has full permissions over admission controllers
 	admissionControllerClusterRoleRule := Rule{
 		Predicate: rules.AdmissionControllerClusterRole,
 		ID:        "AdmissionControllerClusterRole",
@@ -293,7 +276,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, admissionControllerClusterRoleRule)
 
-	// OPR-R22-RBAC - ClusterRole has permissions over service account token creation
+	// OPR-R23-RBAC - ClusterRole has permissions over service account token creation
 	serviceAccountClusterRoleRule := Rule{
 		Predicate: rules.ServiceAccountClusterRole,
 		ID:        "ServiceAccountClusterRole",
@@ -304,18 +287,18 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, serviceAccountClusterRoleRule)
 
-	// OPR-R23-RBAC - ClusterRole has full permissions over persistent volumes
+	// OPR-R24-RBAC - ClusterRole has read, write or delete permissions over persistent volumes
 	persistentVolumeClusterRoleRule := Rule{
 		Predicate: rules.PersistentVolumeClusterRole,
 		ID:        "PersistentVolumeClusterRole",
 		Selector:  ".rules .apiGroups .resources .verbs",
-		Reason:    "The Operator SA cluster role has full permissions over persistent volumes",
+		Reason:    "The Operator SA cluster role has read, write or delete permissions over persistent volumes",
 		Kinds:     []string{"ClusterRole"},
 		Points:    -9,
 	}
 	list = append(list, persistentVolumeClusterRoleRule)
 
-	// OPR-R24-RBAC - ClusterRole has full permissions over network policies
+	// OPR-R25-RBAC - ClusterRole has read, write or delete permissions over network policies
 	networkPolicyClusterRoleRule := Rule{
 		Predicate: rules.NetworkPolicyClusterRole,
 		ID:        "NetworkPolicyClusterRole",
@@ -326,7 +309,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, networkPolicyClusterRoleRule)
 
-	// OPR-R25-RBAC - ClusterRole has permissions over the Kubernetes API server proxy
+	// OPR-R26-RBAC - ClusterRole has permissions over the Kubernetes API server proxy
 	nodeProxyClusterRoleRule := Rule{
 		Predicate: rules.NodeProxyClusterRole,
 		ID:        "NodeProxyClusterRole",

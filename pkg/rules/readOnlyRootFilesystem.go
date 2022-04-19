@@ -1,24 +1,32 @@
+// OPR-R6-SC - securityContext set to readOnlyRootFilesystem: false
 package rules
 
 import (
 	"bytes"
+	"fmt"
+	"strings"
+
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
 func ReadOnlyRootFilesystem(json []byte) int {
+	sc := 0
 	spec := getSpecSelector(json)
 
 	jqContainers := gojsonq.New().Reader(bytes.NewReader(json)).
 		From(spec+".containers").
 		Where("securityContext", "!=", nil).
 		Where("securityContext.readOnlyRootFilesystem", "!=", nil).
-		Where("securityContext.readOnlyRootFilesystem", "=", true)
+		Where("securityContext.readOnlyRootFilesystem", "=", false)
 
-	jqInitContainers := gojsonq.New().Reader(bytes.NewReader(json)).
-		From(spec+".initContainers").
+	jqSecurityContext := gojsonq.New().Reader(bytes.NewReader(json)).
+		From(spec+".securityContext").
 		Where("securityContext", "!=", nil).
-		Where("securityContext.readOnlyRootFilesystem", "!=", nil).
-		Where("securityContext.readOnlyRootFilesystem", "=", true)
+		Where("securityContext.readOnlyRootFilesystem", "!=", nil)
 
-	return jqContainers.Count() + jqInitContainers.Count()
+	if strings.Contains(fmt.Sprintf("%v", jqSecurityContext.Get()), "readOnlyRootFilesystem:false") {
+		sc++
+	}
+
+	return jqContainers.Count() + sc
 }

@@ -1,4 +1,4 @@
-// OPR-R13-RBAC - ClusterRole has access to Kubernetes secrets
+// OPR-R14-RBAC - ClusterRole has access to Kubernetes secrets
 package rules
 
 import (

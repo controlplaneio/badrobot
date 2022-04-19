@@ -1,4 +1,4 @@
-// OPR-R15-RBAC - ClusterRole has escalate permissions
+// OPR-R16-RBAC - ClusterRole has escalate permissions
 package rules
 
 import (

@@ -1,31 +1,32 @@
+// OPR-R9-SC - securityContext adds CAP_SYS_ADMIN Linux capability
 package rules
 
 import (
 	"bytes"
 	"fmt"
-	"github.com/thedevsaddam/gojsonq/v2"
 	"strings"
+
+	"github.com/thedevsaddam/gojsonq/v2"
 )
 
 func CapSysAdmin(json []byte) int {
+	sc := 0
 	spec := getSpecSelector(json)
-	containers := 0
 
 	capAdd := gojsonq.New().Reader(bytes.NewReader(json)).
 		From(spec + ".containers").
 		Only("securityContext.capabilities.add")
 
 	if capAdd != nil && strings.Contains(fmt.Sprintf("%v", capAdd), "SYS_ADMIN") {
-		containers++
+		sc++
 	}
 
-	capAddInit := gojsonq.New().Reader(bytes.NewReader(json)).
-		From(spec + ".initContainers").
-		Only("securityContext.capabilities.add")
+	capAddSpec := gojsonq.New().Reader(bytes.NewReader(json)).
+		From(spec + ".securityContext.capabilities.add")
 
-	if capAddInit != nil && strings.Contains(fmt.Sprintf("%v", capAddInit), "SYS_ADMIN") {
-		containers++
+	if capAddSpec != nil && strings.Contains(fmt.Sprintf("%v", capAddSpec), "SYS_ADMIN") {
+		sc++
 	}
 
-	return containers
+	return sc
 }

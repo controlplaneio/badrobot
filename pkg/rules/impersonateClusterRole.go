@@ -1,4 +1,4 @@
-// OPR-R17-RBAC - ClusterRole has impersonate permissions
+// OPR-R18-RBAC - ClusterRole has impersonate permissions
 package rules
 
 import (

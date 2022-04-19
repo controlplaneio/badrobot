@@ -1,4 +1,4 @@
-// OPR-R24-RBAC - ClusterRole has full permissions over network policies
+// OPR-R25-RBAC - ClusterRole has read, write or delete permissions over network policies
 package rules
 
 import (

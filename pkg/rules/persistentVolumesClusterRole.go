@@ -1,4 +1,4 @@
-// OPR-R23-RBAC - ClusterRole has full permissions over persistent volumes
+// OPR-R24-RBAC - ClusterRole has read, write or delete permissions over persistent volumes
 package rules
 
 import (

@@ -1,11 +1,16 @@
+// OPR-R5-SC - securityContext set to privileged: true
 package rules
 
 import (
 	"bytes"
+	"fmt"
+	"strings"
+
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
 func Privileged(json []byte) int {
+	sc := 0
 	spec := getSpecSelector(json)
 
 	jqContainers := gojsonq.New().Reader(bytes.NewReader(json)).
@@ -14,11 +19,14 @@ func Privileged(json []byte) int {
 		Where("securityContext.privileged", "!=", nil).
 		Where("securityContext.privileged", "=", true)
 
-	jqInitContainers := gojsonq.New().Reader(bytes.NewReader(json)).
-		From(spec+".initContainers").
+	jqSecurityContext := gojsonq.New().Reader(bytes.NewReader(json)).
+		From(spec+".securityContext").
 		Where("securityContext", "!=", nil).
-		Where("securityContext.privileged", "!=", nil).
-		Where("securityContext.privileged", "=", true)
+		Where("securityContext.privileged", "!=", nil)
 
-	return jqContainers.Count() + jqInitContainers.Count()
+	if strings.Contains(fmt.Sprintf("%v", jqSecurityContext.Get()), "privileged:true") {
+		sc++
+	}
+
+	return jqContainers.Count() + sc
 }

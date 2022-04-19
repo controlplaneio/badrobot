@@ -1,4 +1,4 @@
-// OPR-R11-RBAC - ClusterRole has full permissions over all CoreAPI resources
+// OPR-R12-RBAC - ClusterRole has full permissions over all CoreAPI resources
 package rules
 
 import (
@@ -19,16 +19,10 @@ func StarAllCoreAPIClusterRole(json []byte) int {
 	numElementsStr := fmt.Sprintf("%v", jqRules.Count())
 	numElementsVar, _ := strconv.Atoi(numElementsStr)
 
-	// fmt.Print(numElementsVar)
-
 	for i := 1; i <= numElementsVar; i++ {
 		apiGroups := fmt.Sprintf("%v", jqRules.Nth(i).(map[string]interface{})["apiGroups"])
 		resources := fmt.Sprintf("%v", jqRules.Nth(i).(map[string]interface{})["resources"])
 		verbs := fmt.Sprintf("%v", jqRules.Nth(i).(map[string]interface{})["verbs"])
-
-		// fmt.Printf("%v", apiGroups)
-		// fmt.Printf("%v", resources)
-		// fmt.Printf("%v", verbs)
 
 		if strings.Contains(fmt.Sprintf("%v", apiGroups), "[]") &&
 			strings.Contains(fmt.Sprintf("%v", resources), "*") &&

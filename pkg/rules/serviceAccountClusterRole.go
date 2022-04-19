@@ -1,4 +1,4 @@
-// OPR-R22-RBAC - ClusterRole has permissions over service account token creation
+// OPR-R23-RBAC - ClusterRole has permissions over service account token creation
 package rules
 
 import (

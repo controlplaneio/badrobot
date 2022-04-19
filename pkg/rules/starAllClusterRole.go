@@ -1,4 +1,4 @@
-// OPR-R10-RBAC - ClusterRole has full permissions over all resources
+// OPR-R11-RBAC - ClusterRole has full permissions over all resources
 package rules
 
 import (
@@ -24,9 +24,9 @@ func StarAllClusterRole(json []byte) int {
 		From("rules").
 		Only("verbs")
 
-	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "*")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
+	if strings.Contains(fmt.Sprintf("%v", jqAPI), "*") &&
+		strings.Contains(fmt.Sprintf("%v", jqResources), "*") &&
+		strings.Contains(fmt.Sprintf("%v", jqVerbs), "*") {
 		rbac++
 	}
 

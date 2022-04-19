@@ -1,11 +1,16 @@
+// OPR-R4-SC - securityContext set to allowPrivilegeEscalation: true
 package rules
 
 import (
 	"bytes"
+	"fmt"
+	"strings"
+
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
 func AllowPrivilegeEscalation(json []byte) int {
+	sc := 0
 	spec := getSpecSelector(json)
 
 	jqContainers := gojsonq.New().Reader(bytes.NewReader(json)).
@@ -14,11 +19,14 @@ func AllowPrivilegeEscalation(json []byte) int {
 		Where("securityContext.allowPrivilegeEscalation", "!=", nil).
 		Where("securityContext.allowPrivilegeEscalation", "=", true)
 
-	jqInitContainers := gojsonq.New().Reader(bytes.NewReader(json)).
-		From(spec+".initContainers").
+	jqSecurityContext := gojsonq.New().Reader(bytes.NewReader(json)).
+		From(spec+".securityContext").
 		Where("securityContext", "!=", nil).
-		Where("securityContext.allowPrivilegeEscalation", "!=", nil).
-		Where("securityContext.allowPrivilegeEscalation", "=", true)
+		Where("securityContext.allowPrivilegeEscalation", "!=", nil)
 
-	return jqContainers.Count() + jqInitContainers.Count()
+	if strings.Contains(fmt.Sprintf("%v", jqSecurityContext.Get()), "allowPrivilegeEscalation:true") {
+		sc++
+	}
+
+	return jqContainers.Count() + sc
 }
