@@ -4,6 +4,8 @@ package rules
 import (
 	"bytes"
 	"fmt"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/thedevsaddam/gojsonq/v2"
@@ -12,75 +14,46 @@ import (
 func ModifyPodLogsClusterRole(json []byte) int {
 	rbac := 0
 
-	jqAPI := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules").
-		Only("apiGroups")
+	jqRules := gojsonq.New().Reader(bytes.NewReader(json)).
+		From("rules")
 
-	jqResources := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules").
-		// Select("resources").Get()
-		Only("resources")
+	numElementsStr := fmt.Sprintf("%v", jqRules.Count())
+	numElementsVar, _ := strconv.Atoi(numElementsStr)
 
-	jqVerbs := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules").
-		Only("verbs")
+	rePods := regexp.MustCompile(`(pods):?[^/]`)
+	rePodsLog := regexp.MustCompile(`(pods/log)`)
 
-	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "create")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "modify")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "delete")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "deletecollection")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "patch")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "update")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods/log]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods/log]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "create")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods/log]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "modify")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods/log]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "delete")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods/log]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "deletecollection")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods/log]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "patch")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[pods/log]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "update")) {
-		rbac++
+	for i := 1; i <= numElementsVar; i++ {
+		apiGroups := fmt.Sprintf("%v", jqRules.Nth(i).(map[string]interface{})["apiGroups"])
+		resources := fmt.Sprintf("%v", jqRules.Nth(i).(map[string]interface{})["resources"])
+		verbs := fmt.Sprintf("%v", jqRules.Nth(i).(map[string]interface{})["verbs"])
+
+		if strings.Contains(fmt.Sprintf("%v", apiGroups), "[]") &&
+			rePods.MatchString(fmt.Sprintf("%v", resources)) &&
+			strings.Contains(fmt.Sprintf("%v", verbs), "*") {
+			rbac++
+		} else if strings.Contains(fmt.Sprintf("%v", apiGroups), "[]") &&
+			rePods.MatchString(fmt.Sprintf("%v", resources)) &&
+			strings.Contains(fmt.Sprintf("%v", verbs), "create") ||
+			strings.Contains(fmt.Sprintf("%v", verbs), "update") ||
+			strings.Contains(fmt.Sprintf("%v", verbs), "patch") ||
+			strings.Contains(fmt.Sprintf("%v", verbs), "delete") ||
+			strings.Contains(fmt.Sprintf("%v", verbs), "deletecollection") {
+			rbac++
+		} else if strings.Contains(fmt.Sprintf("%v", apiGroups), "[]") &&
+			rePodsLog.MatchString(fmt.Sprintf("%v", resources)) &&
+			strings.Contains(fmt.Sprintf("%v", verbs), "*") {
+			rbac++
+		} else if strings.Contains(fmt.Sprintf("%v", apiGroups), "[]") &&
+			rePodsLog.MatchString(fmt.Sprintf("%v", resources)) &&
+			strings.Contains(fmt.Sprintf("%v", verbs), "create") ||
+			strings.Contains(fmt.Sprintf("%v", verbs), "update") ||
+			strings.Contains(fmt.Sprintf("%v", verbs), "patch") ||
+			strings.Contains(fmt.Sprintf("%v", verbs), "delete") ||
+			strings.Contains(fmt.Sprintf("%v", verbs), "deletecollection") {
+			rbac++
+		}
+
 	}
 
 	return rbac
