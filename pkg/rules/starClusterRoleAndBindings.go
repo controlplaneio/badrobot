@@ -44,29 +44,5 @@ func StarClusterRoleAndBindings(json []byte) int {
 		}
 
 	}
-
 	return rbac
 }
-
-// 	jqAPI := gojsonq.New().Reader(bytes.NewReader(json)).
-// 		From("rules").
-// 		Only("apiGroups")
-
-// 	jqResources := gojsonq.New().Reader(bytes.NewReader(json)).
-// 		From("rules").
-// 		Only("resources")
-
-// 	jqVerbs := gojsonq.New().Reader(bytes.NewReader(json)).
-// 		From("rules").
-// 		Only("verbs")
-
-// 	if strings.Contains(fmt.Sprintf("%v", jqAPI), "rbac.authorization.k8s.io") &&
-// 		strings.Contains(fmt.Sprintf("%v", jqResources), "clusterroles") &&
-// 		strings.Contains(fmt.Sprintf("%v", jqResources), "clusterrolebindings") &&
-// 		strings.Contains(fmt.Sprintf("%v", jqVerbs), "*") {
-// 		rbac++
-// 	}
-
-// 	return rbac
-
-// }

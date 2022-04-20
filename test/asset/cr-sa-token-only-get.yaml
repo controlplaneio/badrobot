@@ -4,12 +4,8 @@ metadata:
   name: example-operator
 rules:
 - apiGroups:
-  - "networking.k8s.io"
+  - ""
   resources:
-  - "networkpolicy"
+  - serviceaccounts/token
   verbs:
-  - create
-  - update
-  - delete
-  - patch
-  - deletecollection
+  - get

@@ -4,9 +4,10 @@ metadata:
   name: example-operator
 rules:
 - apiGroups:
-  - "networking.k8s.io"
+  - admissionregistration.k8s.io
   resources:
-  - "networkpolicy"
+  - mutatingwebhookconfigurations
+  - validatingwebhookconfigurations
   verbs:
   - create
   - update

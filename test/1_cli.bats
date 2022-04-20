@@ -206,11 +206,11 @@ teardown() {
   assert_lt_zero_points
 }
 
-# # OPR-R11-RBAC
-# @test "fails ClusterRole has full access to all resources defined (all verbs)" {
-#   run _app "${TEST_DIR}/asset/cr-all-verbs.yaml"
-#   assert_lt_zero_points
-# }
+# OPR-R11-RBAC
+@test "fails ClusterRole has full access to all resources defined (all verbs)" {
+  run _app "${TEST_DIR}/asset/cr-all-verbs.yaml"
+  assert_lt_zero_points
+}
 
 # CoreAPI Limited Resources
 @test "passes ClusterRole has access to CoreAPI with limited resources defined" {
@@ -245,6 +245,235 @@ teardown() {
 # OPR-R12-RBAC
 @test "fails ClusterRole has full access to CoreAPI defined (all verbs)" {
   run _app "${TEST_DIR}/asset/cr-coreapi-all-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# Only full access to ClusterRoles
+@test "passes ClusterRole only has full access to ClusterRoles" {
+  run _app "${TEST_DIR}/asset/cr-all-clusterroles-only.yaml"
+  assert_zero_points
+}
+
+# Only full access to ClusterRoleBindings
+@test "passes ClusterRole only has full access to ClusterRoleBindings" {
+  run _app "${TEST_DIR}/asset/cr-all-clusterrolebindings-only.yaml"
+  assert_zero_points
+}
+
+# OPR-R13-RBAC
+@test "fails ClusterRole has full access to ClusterRoles and Bindings (*)" {
+  run _app "${TEST_DIR}/asset/cr-all-clusterrolesandbindings-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R13-RBAC
+@test "fails ClusterRole has full access to ClusterRoles and Bindings (all verbs)" {
+  run _app "${TEST_DIR}/asset/cr-all-clusterrolesandbindings-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# TBD KGW Split resources test. Requires additional logic in the ruleset
+# # OPR-R13-RBAC
+# @test "fails ClusterRole has full access to ClusterRoles and Bindings (separate)" {
+#   run _app "${TEST_DIR}/asset/cr-all-crbs-separate.yaml"
+#   assert_lt_zero_points
+# }
+
+# OPR-R14-RBAC
+@test "fails ClusterRole has access to Kubernetes secrets (star)" {
+  run _app "${TEST_DIR}/asset/cr-secrets-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R14-RBAC
+@test "fails ClusterRole has access to Kubernetes secrets (all verbs)" {
+  run _app "${TEST_DIR}/asset/cr-secrets-all-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R15-RBAC
+@test "fails ClusterRole has full access to pods (star)" {
+  run _app "${TEST_DIR}/asset/cr-pods-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R15-RBAC
+@test "fails ClusterRole has get and create permissions on pods (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-pods-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R15-RBAC
+@test "fails ClusterRole has full access to pods/exec (star)" {
+  run _app "${TEST_DIR}/asset/cr-podsexec-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R15-RBAC
+@test "fails ClusterRole has get and create permissions on pods/exec (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-podsexec-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R16-RBAC
+@test "fails ClusterRole has escalate permissions" {
+  run _app "${TEST_DIR}/asset/cr-escalate.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R17-RBAC
+@test "fails ClusterRole has bind permissions" {
+  run _app "${TEST_DIR}/asset/cr-bind.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R18-RBAC
+@test "fails ClusterRole has impersonate permissions" {
+  run _app "${TEST_DIR}/asset/cr-impersonate.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R19-RBAC
+@test "fails ClusterRole has full permissions to modify pod logs (star)" {
+  run _app "${TEST_DIR}/asset/cr-podslog-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R19-RBAC
+@test "fails ClusterRole has full permissions to modify pod logs (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-podslog-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R20-RBAC
+@test "fails ClusterRole has permissions to delete Kubernetes events (star)" {
+  run _app "${TEST_DIR}/asset/cr-remove-events-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R20-RBAC
+@test "fails ClusterRole has permissions to delete Kubernetes events (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-remove-events-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R21-RBAC
+@test "fails ClusterRole has full permissions over ANY crd (star)" {
+  run _app "${TEST_DIR}/asset/cr-custom-resource-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R21-RBAC
+@test "fails ClusterRole has full permissions over ANY crd (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-custom-resource-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R22-RBAC
+@test "fails ClusterRole has full permissions over mutating admission controllers (star)" {
+  run _app "${TEST_DIR}/asset/cr-ad-mutating-webhook-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R22-RBAC
+@test "fails ClusterRole has full permissions over mutating admission controllers (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-ad-mutating-webhook-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R22-RBAC
+@test "fails ClusterRole has full permissions over validating admission controllers (star)" {
+  run _app "${TEST_DIR}/asset/cr-ad-validating-webhook-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R22-RBAC
+@test "fails ClusterRole has full permissions over validating admission controllers (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-ad-validating-webhook-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R22-RBAC
+@test "fails ClusterRole has full permissions over both admission controllers (star)" {
+  run _app "${TEST_DIR}/asset/cr-ad-both-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R22-RBAC
+@test "fails ClusterRole has full permissions over both admission controllers (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-ad-both-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R23-RBAC
+@test "pass ClusterRole has get permissions over service accounts" {
+  run _app "${TEST_DIR}/asset/cr-sa-only-get.yaml"
+  assert_zero_points
+}
+
+# OPR-R23-RBAC
+@test "pass ClusterRole has get permissions over service accounts" {
+  run _app "${TEST_DIR}/asset/cr-sa-token-only-get.yaml"
+  assert_zero_points
+}
+
+# OPR-R23-RBAC
+@test "fails ClusterRole has full permissions over service accounts (star)" {
+  run _app "${TEST_DIR}/asset/cr-sa-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R23-RBAC
+@test "fails ClusterRole has full permissions over service accounts (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-sa-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R23-RBAC
+@test "fails ClusterRole has permissions to access service account tokens (star)" {
+  run _app "${TEST_DIR}/asset/cr-sa-token-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R23-RBAC
+@test "fails ClusterRole has permissions to access service account tokens (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-sa-token-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R24-RBAC
+@test "fails ClusterRole has full permissions over persistent volume claims (star)" {
+  run _app "${TEST_DIR}/asset/cr-pvc-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R24-RBAC
+@test "fails ClusterRole has read, write or delete permissions over persistent volume claim (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-pvc-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R25-RBAC
+@test "fails ClusterRole has full permissions over network (star)" {
+  run _app "${TEST_DIR}/asset/cr-network-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R25-RBAC
+@test "fails ClusterRole has read, write or delete permissions over network (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-network-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R25-RBAC
+@test "fails ClusterRole has full permissions over network policies (star)" {
+  run _app "${TEST_DIR}/asset/cr-network-policy-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R25-RBAC
+@test "fails ClusterRole has read, write or delete permissions over network policies (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-network-policy-verbs.yaml"
   assert_lt_zero_points
 }
 
