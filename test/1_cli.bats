@@ -412,7 +412,7 @@ teardown() {
 }
 
 # serviceaccounts/token with get verbs
-@test "pass ClusterRole has get permissions over service accounts" {
+@test "pass ClusterRole has get permissions over service accounts tokens" {
   run _app "${TEST_DIR}/asset/cr-sa-token-only-get.yaml"
   assert_zero_points
 }
