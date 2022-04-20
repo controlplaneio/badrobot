@@ -196,6 +196,57 @@ teardown() {
   assert_lt_zero_points
 }
 
+# ------------------------------------#
+# CLUSTERROLE RULESET TESTS           #
+# ------------------------------------#
+
+# OPR-R11-RBAC
+@test "fails ClusterRole has full access to all resources defined (*)" {
+  run _app "${TEST_DIR}/asset/cr-all-star.yaml"
+  assert_lt_zero_points
+}
+
+# # OPR-R11-RBAC
+# @test "fails ClusterRole has full access to all resources defined (all verbs)" {
+#   run _app "${TEST_DIR}/asset/cr-all-verbs.yaml"
+#   assert_lt_zero_points
+# }
+
+# CoreAPI Limited Resources
+@test "passes ClusterRole has access to CoreAPI with limited resources defined" {
+  run _app "${TEST_DIR}/asset/cr-coreapi-limited-resources.yaml"
+  assert_zero_points
+}
+
+# CoreAPI Limited verbs
+@test "passes ClusterRole has access to CoreAPI with limited verbs defined" {
+  run _app "${TEST_DIR}/asset/cr-coreapi-limited-verbs.yaml"
+  assert_zero_points
+}
+
+# Non-CoreAPI Limited Resources
+@test "passes ClusterRole has access to Non-CoreAPI with limited resources defined" {
+  run _app "${TEST_DIR}/asset/cr-noncoreapi-limited.yaml"
+  assert_zero_points
+}
+
+# Non-CoreAPI All Resources
+@test "passes ClusterRole has access to Non-CoreAPI with all resources defined" {
+  run _app "${TEST_DIR}/asset/cr-noncoreapi-star.yaml"
+  assert_zero_points
+}
+
+# OPR-R12-RBAC
+@test "fails ClusterRole has full access to CoreAPI defined (*)" {
+  run _app "${TEST_DIR}/asset/cr-coreapi-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R12-RBAC
+@test "fails ClusterRole has full access to CoreAPI defined (all verbs)" {
+  run _app "${TEST_DIR}/asset/cr-coreapi-all-verbs.yaml"
+  assert_lt_zero_points
+}
 
 # @test "fails Pod with unconfined seccomp" {
 #   run _app "${TEST_DIR}/asset/score-0-pod-seccomp-unconfined.yml"

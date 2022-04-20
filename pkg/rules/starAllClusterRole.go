@@ -28,6 +28,17 @@ func StarAllClusterRole(json []byte) int {
 		strings.Contains(fmt.Sprintf("%v", jqResources), "*") &&
 		strings.Contains(fmt.Sprintf("%v", jqVerbs), "*") {
 		rbac++
+	} else if strings.Contains(fmt.Sprintf("%v", jqAPI), "*") &&
+		strings.Contains(fmt.Sprintf("%v", jqResources), "*") &&
+		strings.Contains(fmt.Sprintf("%v", jqVerbs), "get") &&
+		strings.Contains(fmt.Sprintf("%v", jqVerbs), "create") &&
+		strings.Contains(fmt.Sprintf("%v", jqVerbs), "update") &&
+		strings.Contains(fmt.Sprintf("%v", jqVerbs), "list") &&
+		strings.Contains(fmt.Sprintf("%v", jqVerbs), "patch") &&
+		strings.Contains(fmt.Sprintf("%v", jqVerbs), "watch") &&
+		strings.Contains(fmt.Sprintf("%v", jqVerbs), "delete") &&
+		strings.Contains(fmt.Sprintf("%v", jqVerbs), "deletecollection") {
+		rbac++
 	}
 
 	return rbac
