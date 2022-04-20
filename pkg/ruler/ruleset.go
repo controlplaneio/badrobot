@@ -303,7 +303,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Predicate: rules.NetworkPolicyClusterRole,
 		ID:        "NetworkPolicyClusterRole",
 		Selector:  ".rules .apiGroups .resources .verbs",
-		Reason:    "The Operator SA cluster role has full permissions over network policies",
+		Reason:    "The Operator SA cluster role has modify permissions over network policies",
 		Kinds:     []string{"ClusterRole"},
 		Points:    -9,
 	}

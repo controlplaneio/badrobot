@@ -405,13 +405,13 @@ teardown() {
   assert_lt_zero_points
 }
 
-# OPR-R23-RBAC
+# serviceaccounts with get verbs
 @test "pass ClusterRole has get permissions over service accounts" {
   run _app "${TEST_DIR}/asset/cr-sa-only-get.yaml"
   assert_zero_points
 }
 
-# OPR-R23-RBAC
+# serviceaccounts/token with get verbs
 @test "pass ClusterRole has get permissions over service accounts" {
   run _app "${TEST_DIR}/asset/cr-sa-token-only-get.yaml"
   assert_zero_points
@@ -453,6 +453,18 @@ teardown() {
   assert_lt_zero_points
 }
 
+# Network with get verb
+@test "pass ClusterRole only has get permissions for network (star)" {
+  run _app "${TEST_DIR}/asset/cr-network-get.yaml"
+  assert_zero_points
+}
+
+# Network Policy with get verb
+@test "pass ClusterRole only has get permissions over network policies (star)" {
+  run _app "${TEST_DIR}/asset/cr-network-policy-get.yaml"
+  assert_zero_points
+}
+
 # OPR-R25-RBAC
 @test "fails ClusterRole has full permissions over network (star)" {
   run _app "${TEST_DIR}/asset/cr-network-star.yaml"
@@ -460,7 +472,7 @@ teardown() {
 }
 
 # OPR-R25-RBAC
-@test "fails ClusterRole has read, write or delete permissions over network (verbs)" {
+@test "fails ClusterRole has modify permissions over network (verbs)" {
   run _app "${TEST_DIR}/asset/cr-network-verbs.yaml"
   assert_lt_zero_points
 }
@@ -472,190 +484,46 @@ teardown() {
 }
 
 # OPR-R25-RBAC
-@test "fails ClusterRole has read, write or delete permissions over network policies (verbs)" {
+@test "fails ClusterRole has modify permissions over network policies (verbs)" {
   run _app "${TEST_DIR}/asset/cr-network-policy-verbs.yaml"
   assert_lt_zero_points
 }
 
-# @test "fails Pod with unconfined seccomp" {
-#   run _app "${TEST_DIR}/asset/score-0-pod-seccomp-unconfined.yml"
-#   assert_lt_zero_points
-# }
+# Node Delete Only
+@test "pass ClusterRole only has watch permissions over node" {
+  run _app "${TEST_DIR}/asset/cr-node-watch.yaml"
+  assert_zero_points
+}
 
-# @test "fails with CAP_SYS_ADMIN" {
-#   run _app "${TEST_DIR}/asset/score-0-cap-sys-admin.yml"
-#   assert_lt_zero_points
-# }
+# Node Proxy Delete Only
+@test "pass ClusterRole only has watch permissions over node proxy" {
+  run _app "${TEST_DIR}/asset/cr-node-proxy-watch.yaml"
+  assert_zero_points
+}
 
-# @test "fails with CAP_CHOWN" {
-#   run _app "${TEST_DIR}/asset/score-0-cap-chown.yml"
-#   assert_zero_points
-# }
+# OPR-R26-RBAC
+@test "fails ClusterRole has full ermissions over node (star)" {
+  run _app "${TEST_DIR}/asset/cr-node-star.yaml"
+  assert_lt_zero_points
+}
 
-# @test "fails with CAP_SYS_ADMIN and CAP_CHOWN" {
-#   run _app "${TEST_DIR}/asset/score-0-cap-sys-admin-and-cap-chown.yml"
-#   assert_lt_zero_points
-# }
+# OPR-R26-RBAC
+@test "fails ClusterRole has full permissions over node (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-node-verbs.yaml"
+  assert_lt_zero_points
+}
 
-# @test "passes with securityContext capabilities drop all" {
-#   run _app "${TEST_DIR}/asset/score-1-cap-drop-all.yml"
-#   assert_gt_zero_points
-# }
+# OPR-R26-RBAC
+@test "fails ClusterRole has permissions over node proxy (star)" {
+  run _app "${TEST_DIR}/asset/cr-node-proxy-star.yaml"
+  assert_lt_zero_points
+}
 
-# @test "passes deployment with securitycontext readOnlyRootFilesystem" {
-#   run _app "${TEST_DIR}/asset/score-1-dep-ro-root-fs.yml"
-#   assert_gt_zero_points
-# }
-
-# @test "passes deployment with securitycontext runAsNonRoot" {
-#   run _app "${TEST_DIR}/asset/score-1-dep-seccon-run-as-non-root.yml"
-#   assert_gt_zero_points
-# }
-
-# @test "fails deployment with securitycontext runAsUser 1" {
-#   run _app "${TEST_DIR}/asset/score-1-dep-seccon-run-as-user-1.yml"
-#   assert_zero_points
-# }
-
-# @test "passes deployment with securitycontext runAsUser > 10000" {
-#   run _app "${TEST_DIR}/asset/score-1-dep-seccon-run-as-user-10001.yml"
-#   assert_gt_zero_points
-# }
-
-# @test "fails deployment with empty security context" {
-#   run _app "${TEST_DIR}/asset/score-1-dep-empty-security-context.yml"
-#   assert_zero_points
-# }
-
-# @test "fails deployment with invalid security context" {
-#   run _app "${TEST_DIR}/asset/score-1-dep-invalid-security-context.yml"
-
-#   run jq -r .[].message <<<"${output}"
-
-#   assert_output --partial 'Additional property fake is not allowed'
-# }
-
-# @test "passes deployment with cgroup resource limits" {
-#   run _app "${TEST_DIR}/asset/score-1-dep-resource-limit-cpu.yml"
-#   assert_gt_zero_points
-# }
-
-# @test "passes deployment with cgroup memory limits" {
-#   run _app "${TEST_DIR}/asset/score-1-dep-resource-limit-memory.yml"
-#   assert_gt_zero_points
-# }
-
-# @test "passes StatefulSet with volumeClaimTemplate" {
-#   run _app "${TEST_DIR}/asset/score-1-statefulset-volumeclaimtemplate.yml"
-#   assert_gt_zero_points
-# }
-
-# @test "fails StatefulSet with no security" {
-#   run _app "${TEST_DIR}/asset/score-0-statefulset-no-sec.yml"
-#   assert_zero_points
-# }
-
-# @test "fails DaemonSet with securityContext.privileged = true" {
-#   run _app "${TEST_DIR}/asset/score-0-daemonset-securitycontext-privileged.yml"
-#   assert_lt_zero_points
-# }
-
-# @test "fails DaemonSet with mounted host docker.sock" {
-#   run _app "${TEST_DIR}/asset/score-0-daemonset-mount-docker-socket.yml"
-#   assert_lt_zero_points
-# }
-
-# @test "passes Pod with apparmor annotation" {
-#   run _app "${TEST_DIR}/asset/score-3-pod-apparmor.yaml"
-#   assert_gt_zero_points
-# }
-
-# @test "fails Pod with unconfined seccomp for all containers" {
-#   run _app "${TEST_DIR}/asset/score-0-pod-seccomp-unconfined.yml"
-#   assert_lt_zero_points
-# }
-
-# @test "passes Pod with non-unconfined seccomp for all containers" {
-#   run _app "${TEST_DIR}/asset/score-0-pod-seccomp-non-unconfined.yml"
-#   assert_gt_zero_points
-# }
-
-# @test "fails DaemonSet with hostNetwork" {
-#   run _app "${TEST_DIR}/asset/score-0-daemonset-host-network.yml"
-#   assert_lt_zero_points
-# }
-
-# @test "fails DaemonSet with hostPid" {
-#   run _app "${TEST_DIR}/asset/score-0-daemonset-host-pid.yml"
-#   assert_lt_zero_points
-# }
-
-# @test "fails DaemonSet with host docker.socket" {
-#   run _app "${TEST_DIR}/asset/score-0-daemonset-volume-host-docker-socket.yml"
-#   assert_lt_zero_points
-# }
-
-# @test "passes Deployment with serviceaccountname" {
-#   run _app "${TEST_DIR}/asset/score-2-dep-serviceaccount.yml"
-#   assert_gt_zero_points
-# }
-
-# @test "passes pod with serviceaccountname" {
-#   run _app "${TEST_DIR}/asset/score-2-pod-serviceaccount.yml"
-#   assert_gt_zero_points
-# }
-
-# @test "fails deployment with allowPrivilegeEscalation" {
-#   run _app "${TEST_DIR}/asset/allowPrivilegeEscalation.yaml"
-#   assert_lt_zero_points
-# }
-
-# @test "returns integer point score for each advice element" {
-#   run _app "${TEST_DIR}/asset/score-2-pod-serviceaccount.yml"
-#   assert_success
-
-#   run jq -r .[].scoring.advise[].points <<<"${output}"
-
-#   for SCORE in ${output}; do
-#     assert bash -c "[[ ${SCORE} =~ ^[0-9]+$ ]]"
-#   done
-# }
-
-# @test "returns an ordered point score for all advice" {
-#   run _app "${TEST_DIR}/asset/score-2-pod-serviceaccount.yml"
-#   assert_success
-
-#   run jq -r .[].scoring.advise[].points <<<"${output}"
-
-#   PREVIOUS=""
-#   for CURRENT in ${output}; do
-#     [ "${PREVIOUS}" = "" ] || assert [ "${CURRENT}" -le "${PREVIOUS}" ]
-#     PREVIOUS="${CURRENT}"
-#   done
-# }
-
-# @test "returns integer point score for each pass element" {
-#   run _app "${TEST_DIR}/asset/score-5-pod-serviceaccount.yml"
-#   assert_success
-
-#   run jq -r .[].scoring.passed[].points <<<"${output}"
-
-#   for SCORE in ${output}; do
-#     assert bash -c "[[ ${SCORE} =~ ^[0-9]+$ ]]"
-#   done
-# }
-
-# @test "returns an ordered point score for all passed" {
-#   run _app "${TEST_DIR}/asset/score-5-pod-serviceaccount.yml"
-
-#   run jq -r .[].scoring.passed[].points <<<"${output}"
-
-#   PREVIOUS=""
-#   for CURRENT in ${output}; do
-#     [ "${PREVIOUS}" = "" ] || assert [ "${CURRENT}" -le "${PREVIOUS}" ]
-#     PREVIOUS="${CURRENT}"
-#   done
-# }
+# OPR-R26-RBAC
+@test "fails ClusterRole has permissions over node proxy (verbs)" {
+  run _app "${TEST_DIR}/asset/cr-node-proxy-verbs.yaml"
+  assert_lt_zero_points
+}
 
 # @test "check critical and advisory points listed by magnitude" {
 #   run _app "${TEST_DIR}/asset/critical-double.yml"
