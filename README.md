@@ -3,7 +3,7 @@
 - [About](#about)
   - [Prerequisites](#prerequisites)
 - [Install](#install)
-  -[Go](#go-116)
+  - [Go](#go-116)
 - [Command line Usage](#command-line-usage)
   - [Usage Example](#usage-example)
   - [Docker Usage](#docker-usage)
