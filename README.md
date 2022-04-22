@@ -1,4 +1,4 @@
-# BadRobot (Kubernetes Operator Audit Tool)
+# BadRobot
 
 - [About](#about)
   - [Prerequisites](#prerequisites)
@@ -34,7 +34,7 @@ Usage:
   badrobot scan [file] [flags]
 
 Examples:
-  badrobot scan ./deployment.yaml
+  badrobot scan ./operator.yaml
 
 Flags:
       --absolute-path       use the absolute path for the file name
