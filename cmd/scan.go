@@ -83,7 +83,7 @@ func getInput(args []string) (File, error) {
 var scanCmd = &cobra.Command{
 	Use:     `scan [file]`,
 	Short:   "Scans Kubernetes Operator resource YAML or JSON",
-	Example: `  badrobot scan ./deployment.yaml`,
+	Example: `  badrobot scan ./operator.yaml`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			return fmt.Errorf("file path is required")

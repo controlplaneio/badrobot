@@ -1,20 +1,80 @@
 # BadRobot (Kubernetes Operator Audit Tool)
 
-- [Overview](#overview)
-  - [Structure](#structure)
-  - [Rulesets](#rulesets)
+- [About](#about)
+  - [Prerequisites](#prerequisites)
+- [Install](#install)
+  -[Go](#go-116)
 - [Command line Usage](#command-line-usage)
+  - [Usage Example](#usage-example)
+  - [Docker Usage](#docker-usage)
+- [Rulesets](#rulesets)
+- [Roadmap](#roadmap)
 
 ---
-## Overview
-Badrobot is the internal R&D project codename for a Kubernetes Operator Audit Tool. The purpose of the project is to create an open source tool which audits Public or Private Kubernetes Operators. As Operators can have a large scope the initial version will be focused on specific resources and Operators which conform to the Operator SDK. If successful, the tool could be expanded to identify any resources which are associated with an Operator.
+## About
+Badrobot is a Kubernetes Operator audit tool. It statically analyses manifests for high risk configurations such as lack of security restrictions on the deployed controller and the permissions of an associated clusterole. The risk analysis is primarily focussed on the likelihood that a compromised Operator would be able to obtain full cluster permissions.
 
-### Structure
-The tool is supposed be a static code analyser which can run against a code repository and provide an "opinionated" score on the current Operator configuration. This is similar to KubeSec and will be structured in the same way, that is:
-* code to scan a .yaml file
-* a package of rules to apply against the .yaml file
+### Prerequisites
+BadRobot requires the Operator manifests to be bundled into a single file, rather than scanning an entire directory structure and analysing individual manifests.
 
-### Rulesets
+## Install
+BadRobot can be run as a container or as a local go binary
+
+### Go 1.16+
+
+```bash
+$ go install github.com/controlplaneio/badrobot/
+```
+## Command Line Usage
+```bash
+$ badrobot scan --help
+Scans Kubernetes Operator resource YAML or JSON
+
+Usage:
+  badrobot scan [file] [flags]
+
+Examples:
+  badrobot scan ./deployment.yaml
+
+Flags:
+      --absolute-path       use the absolute path for the file name
+      --debug               turn on debug logs
+      --exit-code int       Set the exit-code to use on failure (default 2)
+  -f, --format string       Set output format (json, template) (default "json")
+  -h, --help                help for scan
+  -o, --output string       Set output location
+      --schema-dir string   Sets the directory for the json schemas
+  -t, --template string     Set output template, it will check for a file or read input as the
+```
+
+### Usage Example
+
+```bash
+$ cat <<EOF > operator.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: example-operator
+rules:
+- apiGroups:
+  - "*"
+  resources:
+  - "*"
+  verbs:
+  - "*"
+EOF
+$ badrobot scan operator.yaml
+```
+
+### Docker usage:
+
+Run the same command in Docker:
+
+```bash
+$ docker run -i controlplaneio/badrobot scan /dev/stdin < operator.yaml
+```
+
+## Rulesets
 
 | RuleSet ID | Rule | Risk | Risk Level |
 |-----|-----|-----|-----|
@@ -46,9 +106,9 @@ The tool is supposed be a static code analyser which can run against a code repo
 | OPR-R26-RBAC | ClusterRole has permissions over the Kubernetes API server proxy | The Operator is deployed with permissions over the proxy sub resource of the node, allowing command execution on every pod on the node via the Kubelet API. An adversary can leverage this permission on the Operator to run custom workloads on several pods on the node. | High |
 
 ---
-## Command Line Usage
-```bash
-$ badrobot scan operator-manifest.yaml
-```
-> Currently there are example operator files to use for Badrobot under test/example-yaml
-## Appendix
+## Roadmap
+In the future, BadRobot could be extended to consider the following manifests:
+
+1. kind: Role - The analysis of roles can be included to detemine whether they are bound to a dedicated namespace, whether they only have access to specific custom resources, etc.
+2. kind: Namespace (Pod Security Standards) - The analysis could determine whether Pod Security Standards are applied for Kubernetes Clusters v1.23 and above.
+3. kind: NetworkPolicy - Analyse whether network policies are being applied to the Operator
