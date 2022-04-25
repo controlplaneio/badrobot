@@ -52,7 +52,3 @@ assert_invalid_input() {
     || assert_output --regexp ".*no such file or directory.*" \
     || assert_output --regexp ".*Invalid input.*"
 }
-
-assert_failure_local() {
-  assert_failure
-}
