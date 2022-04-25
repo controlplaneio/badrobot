@@ -15,7 +15,7 @@ func ClusterAdmin(json []byte) int {
 	jqCRB := gojsonq.New().Reader(bytes.NewReader(json)).
 		From("roleRef.name")
 
-	reCRB := regexp.MustCompile(`:?[^-_\.](cluster):?[-](admin):?[^-_\.]`)
+	reCRB := regexp.MustCompile(`:?[^-_\.\w](cluster):?[-](admin):?[^-_\.\w]`)
 
 	if reCRB.MatchString(fmt.Sprintf("%v", jqCRB)) {
 		rbac++

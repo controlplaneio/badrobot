@@ -22,9 +22,9 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := RunAsUser(json)
-	if containers != 1 {
-		t.Errorf("Got %v containers wanted %v", containers, 1)
+	securityContext := RunAsUser(json)
+	if securityContext != 1 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 1)
 	}
 }
 
@@ -58,8 +58,8 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := RunAsUser(json)
-	if containers != 1 {
-		t.Errorf("Got %v containers wanted %v", containers, 1)
+	securityContext := RunAsUser(json)
+	if securityContext != 1 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 1)
 	}
 }

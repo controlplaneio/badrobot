@@ -24,9 +24,9 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := NoSecurityContext(json)
-	if containers != 0 {
-		t.Errorf("Got %v containers wanted %v", containers, 0)
+	securityContext := NoSecurityContext(json)
+	if securityContext != 0 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}
 }
 
@@ -47,9 +47,9 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := NoSecurityContext(json)
-	if containers != 1 {
-		t.Errorf("Got %v containers wanted %v", containers, 1)
+	securityContext := NoSecurityContext(json)
+	if securityContext != 1 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 1)
 	}
 }
 
@@ -70,9 +70,9 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := NoSecurityContext(json)
-	if containers != 0 {
-		t.Errorf("Got %v containers wanted %v", containers, 0)
+	securityContext := NoSecurityContext(json)
+	if securityContext != 0 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}
 }
 
@@ -91,8 +91,8 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := NoSecurityContext(json)
-	if containers != 1 {
-		t.Errorf("Got %v containers wanted %v", containers, 1)
+	securityContext := NoSecurityContext(json)
+	if securityContext != 1 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 1)
 	}
 }

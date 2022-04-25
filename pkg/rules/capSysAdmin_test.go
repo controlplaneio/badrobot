@@ -45,9 +45,9 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := CapSysAdmin(json)
-	if containers != 1 {
-		t.Errorf("Got %v containers wanted %v", containers, 1)
+	securityContext := CapSysAdmin(json)
+	if securityContext != 1 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 1)
 	}
 }
 
@@ -90,9 +90,9 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := CapSysAdmin(json)
-	if containers != 2 {
-		t.Errorf("Got %v containers wanted %v", containers, 2)
+	securityContext := CapSysAdmin(json)
+	if securityContext != 2 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 2)
 	}
 }
 
@@ -102,8 +102,6 @@ func Test_CapSysAdmin_Missing(t *testing.T) {
 apiVersion: v1
 kind: Pod
 spec:
-  initContainers:
-  - name: init1
   containers:
   - name: c1
 `
@@ -113,8 +111,8 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := CapSysAdmin(json)
-	if containers != 0 {
-		t.Errorf("Got %v containers wanted %v", containers, 0)
+	securityContext := CapSysAdmin(json)
+	if securityContext != 0 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}
 }
