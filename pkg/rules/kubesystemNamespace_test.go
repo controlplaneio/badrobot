@@ -8,7 +8,7 @@ import (
 
 // -- TODO KGW Write tests
 
-func Test_NonDefaultNamespace(t *testing.T) {
+func Test_NonKubeSystemNamespace(t *testing.T) {
 	var data = `
 ---
 apiVersion: v1
@@ -22,9 +22,9 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	namespace := NonDefaultNamespace(json)
-	if namespace != 1 {
-		t.Errorf("Got %v namespace wanted %v", namespace, 1)
+	namespace := KubeSystemNamespace(json)
+	if namespace != 0 {
+		t.Errorf("Got %v namespace wanted %v", namespace, 0)
 	}
 }
 
@@ -44,6 +44,6 @@ metadata:
 
 	namespace := KubeSystemNamespace(json)
 	if namespace != 1 {
-		t.Errorf("Got %v namespace wanted %v", namespace, 1)
+		t.Errorf("Got %v namespace wanted %v", namespace, 0)
 	}
 }

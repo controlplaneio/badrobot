@@ -8,20 +8,36 @@ import (
 func Test_CapSysAdmin_Pod(t *testing.T) {
 	var data = `
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller-manager
+  namespace: system
+  labels:
+    control-plane: controller-manager
 spec:
-  containers:
-  - name: c1
-    securityContext:
-      capabilities:
-        add:
-          - SYS_ADMIN
-          - SYS_TIME
-  - name: c2
-    securityContext:
-      capabilities:
-  - name: c3
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+      labels:
+        control-plane: controller-manager
+    spec:
+      containers:
+      - name: c1
+        image: controller:latest
+        securityContext:
+          capabilities:
+            add:
+              - SYS_ADMIN
+      - name: c2
+        image: controller:latest
+        securityContext:
+          capabilities:
 `
 
 	json, err := yaml.YAMLToJSON([]byte(data))
@@ -35,24 +51,38 @@ spec:
 	}
 }
 
-func Test_CapSysAdmin_InitContainers(t *testing.T) {
+func Test_CapSysAdmin_Spec(t *testing.T) {
 	var data = `
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller-manager
+  namespace: system
+  labels:
+    control-plane: controller-manager
 spec:
-  initContainers:
-  - name: init1
-    securityContext:
-      capabilities:
-        add:
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+      labels:
+        control-plane: controller-manager
+    spec:
+      securityContext:
+        capabilities:
+          add:
           - SYS_ADMIN
-  containers:
-  - name: c1
-    securityContext:
-      capabilities:
-        add:
-          - SYS_ADMIN
+      containers:
+      - name: c1
+        securityContext:
+          capabilities:
+            add:
+              - SYS_ADMIN
 `
 
 	json, err := yaml.YAMLToJSON([]byte(data))

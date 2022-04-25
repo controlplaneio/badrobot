@@ -34,43 +34,6 @@ spec:
 	}
 }
 
-func Test_ReadOnlyRootFilesystem_InitContainers(t *testing.T) {
-	var data = `
----
-apiVersion: apps/v1
-kind: Deployment
-spec:
-  template:
-    spec:
-      initContainers:
-        - name: init1
-          securityContext:
-            readOnlyRootFilesystem: true
-        - name: init2
-          securityContext:
-            readOnlyRootFilesystem: false
-        - name: init3
-      containers:
-        - name: c1
-        - name: c2
-          securityContext:
-            readOnlyRootFilesystem: false
-        - name: c3
-          securityContext:
-            readOnlyRootFilesystem: true
-`
-
-	json, err := yaml.YAMLToJSON([]byte(data))
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-
-	containers := ReadOnlyRootFilesystem(json)
-	if containers != 2 {
-		t.Errorf("Got %v containers wanted %v", containers, 2)
-	}
-}
-
 func Test_ReadOnlyRootFilesystem_NotSpecified(t *testing.T) {
 	var data = `
 ---
@@ -107,7 +70,7 @@ kind: Deployment
 spec:
   template:
     spec:
-      serviceAccountName: kubesec
+      serviceAccountName: badrobot
 `
 
 	json, err := yaml.YAMLToJSON([]byte(data))

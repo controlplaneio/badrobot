@@ -17,14 +17,18 @@ func CapSysAdmin(json []byte) int {
 		From(spec + ".containers").
 		Only("securityContext.capabilities.add")
 
+	fmt.Printf("%v", capAdd)
+
 	if capAdd != nil && strings.Contains(fmt.Sprintf("%v", capAdd), "SYS_ADMIN") {
 		sc++
 	}
 
 	capAddSpec := gojsonq.New().Reader(bytes.NewReader(json)).
-		From(spec + ".securityContext.capabilities.add")
+		From(spec + ".securityContext.capabilities.add").Get()
 
-	if capAddSpec != nil && strings.Contains(fmt.Sprintf("%v", capAddSpec), "SYS_ADMIN") {
+	fmt.Printf("%v", capAddSpec)
+
+	if strings.Contains(fmt.Sprintf("%v", capAddSpec), "SYS_ADMIN") {
 		sc++
 	}
 
