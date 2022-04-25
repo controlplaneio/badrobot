@@ -406,13 +406,13 @@ teardown() {
 }
 
 # serviceaccounts with get verbs
-@test "pass ClusterRole has get permissions over service accounts" {
+@test "passes ClusterRole has get permissions over service accounts" {
   run _app "${TEST_DIR}/asset/cr-sa-only-get.yaml"
   assert_zero_points
 }
 
 # serviceaccounts/token with get verbs
-@test "pass ClusterRole has get permissions over service accounts tokens" {
+@test "passes ClusterRole has get permissions over service accounts tokens" {
   run _app "${TEST_DIR}/asset/cr-sa-token-only-get.yaml"
   assert_zero_points
 }
@@ -454,13 +454,13 @@ teardown() {
 }
 
 # Network with get verb
-@test "pass ClusterRole only has get permissions for network (star)" {
+@test "passes ClusterRole only has get permissions for network (star)" {
   run _app "${TEST_DIR}/asset/cr-network-get.yaml"
   assert_zero_points
 }
 
 # Network Policy with get verb
-@test "pass ClusterRole only has get permissions over network policies (star)" {
+@test "passes ClusterRole only has get permissions over network policies (star)" {
   run _app "${TEST_DIR}/asset/cr-network-policy-get.yaml"
   assert_zero_points
 }
@@ -490,13 +490,13 @@ teardown() {
 }
 
 # Node Delete Only
-@test "pass ClusterRole only has watch permissions over node" {
+@test "passes ClusterRole only has watch permissions over node" {
   run _app "${TEST_DIR}/asset/cr-node-watch.yaml"
   assert_zero_points
 }
 
 # Node Proxy Delete Only
-@test "pass ClusterRole only has watch permissions over node proxy" {
+@test "passes ClusterRole only has watch permissions over node proxy" {
   run _app "${TEST_DIR}/asset/cr-node-proxy-watch.yaml"
   assert_zero_points
 }
