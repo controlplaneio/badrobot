@@ -13,13 +13,32 @@ func TestRule_Eval(t *testing.T) {
 ---
 apiVersion: apps/v1
 kind: Deployment
+metadata:
+  name: controller-manager
+  namespace: system
+  labels:
+    control-plane: controller-manager
 spec:
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  replicas: 1
   template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+      labels:
+        control-plane: controller-manager
     spec:
       containers:
-        - name: alpine
-          image: alpine
-          hostNetwork: false
+      - command:
+        - /manager
+        args:
+        - --leader-elect
+        image: controller:latest
+        name: manager
+        securityContext:
+          allowPrivilegeEscalation: false
 `
 
 	json, err := yaml.YAMLToJSON([]byte(data))
@@ -28,16 +47,17 @@ spec:
 	}
 
 	rule := &Rule{
-		Predicate: rules.HostNetwork,
+		Predicate: rules.AllowPrivilegeEscalation,
 		Kinds:     []string{"Deployment"},
 	}
 
-	matchedContainerCount, err := rule.Eval(json)
+	matchedSecurityContext, err := rule.Eval(json)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if matchedContainerCount != 0 {
-		t.Errorf(fmt.Sprintf("Rule failed when it shouldn't with count %d", matchedContainerCount))
+	if matchedSecurityContext != 0 {
+		fmt.Printf("%v", matchedSecurityContext)
+		t.Errorf(fmt.Sprintf("Rule failed when it shouldn't with count %d", matchedSecurityContext))
 	}
 }
 
@@ -50,8 +70,10 @@ spec:
   template:
     spec:
       containers:
-        - name: alpine
-          image: alpine
+        - name: manager
+          image: controller:latest
+          securityContext:
+            allowPrivilegeEscalation: true
 `
 
 	json, err := yaml.YAMLToJSON([]byte(data))
@@ -60,7 +82,7 @@ spec:
 	}
 
 	rule := &Rule{
-		Predicate: rules.HostNetwork,
+		Predicate: rules.AllowPrivilegeEscalation,
 		Kinds:     []string{"Deployment"},
 	}
 
@@ -78,8 +100,10 @@ spec:
   template:
     spec:
       containers:
-        - name: alpine
-          image: alpine
+        - name: manager
+          image: controller:latest
+          securityContext:
+            allowPrivilegeEscalation: true
 `
 
 	json, err := yaml.YAMLToJSON([]byte(data))
@@ -88,7 +112,7 @@ spec:
 	}
 
 	rule := &Rule{
-		Predicate: rules.HostNetwork,
+		Predicate: rules.AllowPrivilegeEscalation,
 		Kinds:     []string{"Deployment"},
 	}
 

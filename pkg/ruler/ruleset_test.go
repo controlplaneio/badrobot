@@ -1,7 +1,7 @@
 package ruler
 
 import (
-	"strings"
+	// "strings"
 	"testing"
 
 	"github.com/ghodss/yaml"
@@ -24,16 +24,11 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	report := NewRuleset(zap.NewNop().Sugar()).generateReport("kube.yaml", json, schemaDir)
+	report := NewRuleset(zap.NewNop().Sugar()).generateReport("operator.yaml", json, schemaDir)
 
 	critical := len(report.Scoring.Critical)
 	if critical < 1 {
 		t.Errorf("Got %v critical rules wanted many", critical)
-	}
-
-	advise := len(report.Scoring.Advise)
-	if advise < 1 {
-		t.Errorf("Got %v advise rules wanted many", advise)
 	}
 
 	if report.Score > 0 {
