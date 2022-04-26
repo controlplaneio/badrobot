@@ -38,7 +38,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".metadata .name == default .subjects .namespace == default",
 		Reason:    "Operator is deployed into the default namespace.",
 		Kinds:     []string{"Namespace", "Deployment", "ClusterRoleBinding"},
-		Points:    -3,
+		Points:    -1,
 	}
 	list = append(list, defaultNamespaceRule)
 
@@ -60,7 +60,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".spec .template .spec .securityContext .containers[] ",
 		Reason:    "Operators should be deployed with securityContextApplied",
 		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    -9,
+		Points:    -16,
 	}
 	list = append(list, noSecurityContextRule)
 
@@ -71,7 +71,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".spec .containers[] .securityContext .allowPrivilegeEscalation == true",
 		Reason:    "Operators should not deploy with allowPrivilegeEscalation: true",
 		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    -7,
+		Points:    -12,
 	}
 	list = append(list, allowPrivilegeEscalation)
 
@@ -82,7 +82,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".spec .containers[] .securityContext .privileged == true",
 		Reason:    "Operators should not deploy with privileged: true",
 		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    -30,
+		Points:    -16,
 	}
 	list = append(list, privilegedRule)
 
@@ -93,7 +93,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".spec .containers[] .securityContext .readOnlyRootFilesystem == false",
 		Reason:    "Operators should not deploy with readOnlyRootFilesystem: true",
 		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    -7,
+		Points:    -6,
 	}
 	list = append(list, readOnlyRootFilesystemRule)
 
@@ -104,7 +104,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".spec .containers[] .securityContext .runAsNonRoot == false",
 		Reason:    "Operators should not run as the root user",
 		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    -7,
+		Points:    -9,
 	}
 	list = append(list, runAsNonRootRule)
 
@@ -115,7 +115,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".spec containers[] .securityContext .runAsUser -gt 0",
 		Reason:    "Operators should not run as the root user (UID = 0)",
 		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    -7,
+		Points:    -9,
 	}
 	list = append(list, runAsUserRule)
 
@@ -126,7 +126,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  "containers[] .securityContext .capabilities .add == SYS_ADMIN",
 		Reason:    "CAP_SYS_ADMIN is the most privileged capability and where possible disabled for Operators",
 		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    -30,
+		Points:    -16,
 	}
 	list = append(list, capSysAdminRule)
 
@@ -137,7 +137,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".roleRef .name",
 		Reason:    "The Operator is using Kubernetes native cluster admin role. Operators must use a dedicated cluster role",
 		Kinds:     []string{"ClusterRoleBinding"},
-		Points:    -30,
+		Points:    -25,
 	}
 	list = append(list, clusterAdminRule)
 
@@ -148,7 +148,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has full permissions on all resources in the cluster",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -30,
+		Points:    -25,
 	}
 	list = append(list, starAllClusterRoleRule)
 
@@ -159,7 +159,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has full permissions on all CoreAPI resources in the cluster",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -30,
+		Points:    -16,
 	}
 	list = append(list, starAllCoreAPIClusterRoleRule)
 
@@ -170,7 +170,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has full permissions over ClusterRoles and ClusterRoleBindings",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -9,
+		Points:    -12,
 	}
 	list = append(list, starClusterRoleAndBindingsRule)
 
@@ -181,7 +181,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has access to all secrets",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -9,
+		Points:    -12,
 	}
 	list = append(list, secretsClusterRoleRule)
 
@@ -203,7 +203,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has escalate permissions",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -9,
+		Points:    -16,
 	}
 	list = append(list, escalateClusterRoleRule)
 
@@ -214,7 +214,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has bind permissions",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -9,
+		Points:    -16,
 	}
 	list = append(list, bindClusterRoleRule)
 
@@ -225,7 +225,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has impersonate permissions",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -30,
+		Points:    -20,
 	}
 	list = append(list, impersonateClusterRoleRule)
 
@@ -236,7 +236,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has permissions to modify pod logs",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -1,
+		Points:    -2,
 	}
 	list = append(list, modifyPodLogsClusterRoleRule)
 
@@ -247,7 +247,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has permissions to delete Kubernetes Events",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -9,
+		Points:    -2,
 	}
 	list = append(list, removeEventsClusterRoleRule)
 
@@ -258,7 +258,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has permissions over any Custom Resource",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -1,
+		Points:    -8,
 	}
 	list = append(list, customResourceClusterRoleRule)
 
@@ -269,7 +269,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has full permissions over Admission Controllers",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -9,
+		Points:    -12,
 	}
 	list = append(list, admissionControllerClusterRoleRule)
 
@@ -280,7 +280,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has permissions over service accounts to create token requests for existing service accounts",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -9,
+		Points:    -12,
 	}
 	list = append(list, serviceAccountClusterRoleRule)
 
@@ -313,7 +313,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".rules .apiGroups .resources .verbs",
 		Reason:    "The Operator SA cluster role has permissions the Kubernetes API server proxy",
 		Kinds:     []string{"ClusterRole"},
-		Points:    -9,
+		Points:    -16,
 	}
 	list = append(list, nodeProxyClusterRoleRule)
 
