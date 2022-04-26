@@ -34,43 +34,6 @@ spec:
 	}
 }
 
-func Test_ReadOnlyRootFilesystem_InitContainers(t *testing.T) {
-	var data = `
----
-apiVersion: apps/v1
-kind: Deployment
-spec:
-  template:
-    spec:
-      initContainers:
-        - name: init1
-          securityContext:
-            readOnlyRootFilesystem: true
-        - name: init2
-          securityContext:
-            readOnlyRootFilesystem: false
-        - name: init3
-      containers:
-        - name: c1
-        - name: c2
-          securityContext:
-            readOnlyRootFilesystem: false
-        - name: c3
-          securityContext:
-            readOnlyRootFilesystem: true
-`
-
-	json, err := yaml.YAMLToJSON([]byte(data))
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-
-	containers := ReadOnlyRootFilesystem(json)
-	if containers != 2 {
-		t.Errorf("Got %v containers wanted %v", containers, 2)
-	}
-}
-
 func Test_ReadOnlyRootFilesystem_NotSpecified(t *testing.T) {
 	var data = `
 ---
@@ -93,9 +56,9 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := ReadOnlyRootFilesystem(json)
-	if containers != 0 {
-		t.Errorf("Got %v containers wanted %v", containers, 0)
+	securityContext := ReadOnlyRootFilesystem(json)
+	if securityContext != 0 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}
 }
 
@@ -107,7 +70,7 @@ kind: Deployment
 spec:
   template:
     spec:
-      serviceAccountName: kubesec
+      serviceAccountName: badrobot
 `
 
 	json, err := yaml.YAMLToJSON([]byte(data))
@@ -115,8 +78,44 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := ReadOnlyRootFilesystem(json)
-	if containers != 0 {
-		t.Errorf("Got %v containers wanted %v", containers, 0)
+	securityContext := ReadOnlyRootFilesystem(json)
+	if securityContext != 0 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
+	}
+}
+
+func Test_ReadOnlyRootFilesystem_Deploy_Spec(t *testing.T) {
+	var data = `
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller-manager
+  namespace: system
+  labels:
+    control-plane: controller-manager
+spec:
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  replicas: 1
+  template:
+    metadata:
+    annotations:
+      kubectl.kubernetes.io/default-container: manager
+    labels:
+      control-plane: controller-manager
+    spec:
+      securityContext:
+        readOnlyRootFilesystem: true
+`
+
+	json, err := yaml.YAMLToJSON([]byte(data))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	securityContext := ReadOnlyRootFilesystem(json)
+	if securityContext != 0 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}
 }

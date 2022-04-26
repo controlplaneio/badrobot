@@ -21,9 +21,9 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	namespace := NonDefaultNamespace(json)
-	if namespace != 1 {
-		t.Errorf("Got %v namespace wanted %v", namespace, 1)
+	namespace := DefaultNamespace(json)
+	if namespace != 0 {
+		t.Errorf("Got %v namespace wanted %v", namespace, 0)
 	}
 }
 

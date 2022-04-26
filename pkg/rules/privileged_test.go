@@ -5,39 +5,6 @@ import (
 	"testing"
 )
 
-func Test_Privileged_InitContainers(t *testing.T) {
-	var data = `
----
-apiVersion: apps/v1
-kind: Deployment
-spec:
-  template:
-    spec:
-      initContainers:
-        - name: init1
-          securityContext:
-            privileged: true
-        - name: init2
-          securityContext:
-            privileged: false
-      containers:
-        - name: c1
-        - name: c2
-          securityContext:
-            privileged: true
-`
-
-	json, err := yaml.YAMLToJSON([]byte(data))
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-
-	containers := Privileged(json)
-	if containers != 2 {
-		t.Errorf("Got %v containers wanted %v", containers, 2)
-	}
-}
-
 func Test_Privileged_Pod(t *testing.T) {
 	var data = `
 ---
@@ -55,9 +22,9 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := Privileged(json)
-	if containers != 1 {
-		t.Errorf("Got %v containers wanted %v", containers, 1)
+	securityContext := Privileged(json)
+	if securityContext != 1 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 1)
 	}
 }
 
@@ -78,8 +45,44 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := Privileged(json)
-	if containers != 0 {
-		t.Errorf("Got %v containers wanted %v", containers, 0)
+	securityContext := Privileged(json)
+	if securityContext != 0 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
+	}
+}
+
+func Test_Privileged_Deploy_Spec(t *testing.T) {
+	var data = `
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller-manager
+  namespace: system
+  labels:
+    control-plane: controller-manager
+spec:
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  replicas: 1
+  template:
+    metadata:
+    annotations:
+      kubectl.kubernetes.io/default-container: manager
+    labels:
+      control-plane: controller-manager
+    spec:
+      securityContext:
+        privileged: false
+`
+
+	json, err := yaml.YAMLToJSON([]byte(data))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	securityContext := Privileged(json)
+	if securityContext != 0 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}
 }

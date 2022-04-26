@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func Test_AllowPrivilegeEscalation(t *testing.T) {
+func Test_AllowPrivilegeEscalation_Deploy(t *testing.T) {
 	var data = `
 ---
 apiVersion: apps/v1
@@ -30,36 +30,35 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := AllowPrivilegeEscalation(json)
-	if containers != 3 {
-		t.Errorf("Got %v containers wanted %v", containers, 3)
+	securityContext := AllowPrivilegeEscalation(json)
+	if securityContext != 3 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 3)
 	}
 }
 
-func Test_AllowPrivilegeEscalation_InitContainers(t *testing.T) {
+func Test_AllowPrivilegeEscalation_Spec(t *testing.T) {
 	var data = `
----
 apiVersion: apps/v1
 kind: Deployment
+metadata:
+  name: controller-manager
+  namespace: system
+  labels:
+    control-plane: controller-manager
 spec:
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  replicas: 1
   template:
+    metadata:
+    annotations:
+      kubectl.kubernetes.io/default-container: manager
+    labels:
+      control-plane: controller-manager
     spec:
-      initContainers:
-        - name: init1
-          securityContext:
-            allowPrivilegeEscalation: true
-        - name: init2
-          securityContext:
-            allowPrivilegeEscalation: false
-        - name: init3
-      containers:
-        - name: c1
-        - name: c2
-          securityContext:
-            allowPrivilegeEscalation: false
-        - name: c3
-          securityContext:
-            allowPrivilegeEscalation: true
+      securityContext:
+        allowPrivilegeEscalation: false
 `
 
 	json, err := yaml.YAMLToJSON([]byte(data))
@@ -67,8 +66,8 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := AllowPrivilegeEscalation(json)
-	if containers != 2 {
-		t.Errorf("Got %v containers wanted %v", containers, 2)
+	securityContext := AllowPrivilegeEscalation(json)
+	if securityContext != 0 {
+		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}
 }

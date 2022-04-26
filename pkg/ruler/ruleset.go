@@ -2,7 +2,6 @@ package ruler
 
 import (
 	"bytes"
-	// "crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -12,8 +11,6 @@ import (
 
 	"github.com/controlplaneio/badrobot/pkg/rules"
 	"github.com/ghodss/yaml"
-
-	// "github.com/in-toto/in-toto-golang/in_toto"
 
 	"github.com/thedevsaddam/gojsonq/v2"
 	"go.uber.org/zap"
@@ -360,51 +357,6 @@ func (rs *Ruleset) Run(fileName string, fileBytes []byte, schemaDir string) ([]R
 
 	return reports, nil
 }
-
-// func GenerateInTotoLink(reports []Report, fileBytes []byte) in_toto.Metablock {
-
-// 	var linkMb in_toto.Metablock
-
-// 	materials := make(map[string]interface{})
-// 	request := make(map[string]interface{})
-
-// 	// INFO: it appears that the last newline of the yaml is removed when
-// 	// receiving, which makes the integrity check fail on other implementations
-// 	fileBytes = append(fileBytes, 10)
-
-// 	request["sha256"] = fmt.Sprintf("%x", sha256.Sum256([]uint8(fileBytes)))
-
-// 	// TODO: the filename should be a parameter passed to the report (as it is
-// 	// very likely other filenames will exist in supply chains)
-// 	materials["deployment.yml"] = request
-
-// 	products := make(map[string]interface{})
-// 	for _, report := range reports {
-// 		reportArtifact := make(map[string]interface{})
-// 		// FIXME: encoding as json now for integrity check, this is the wrong way
-// 		// to compute the hash over the result. Also, some error checking would be
-// 		// more than ideal.
-// 		reportValue, _ := json.Marshal(report)
-// 		reportArtifact["sha256"] =
-// 			fmt.Sprintf("%x", sha256.Sum256([]uint8(reportValue)))
-// 		products[report.Object] = reportArtifact
-// 	}
-
-// 	linkMb.Signatures = []in_toto.Signature{}
-// 	linkMb.Signed = in_toto.Link{
-// 		Type:       "link",
-// 		Name:       "kubesec",
-// 		Materials:  materials,
-// 		Products:   products,
-// 		ByProducts: map[string]interface{}{},
-// 		// FIXME: the command should include whether this is called through the
-// 		// server or a standalone tool.
-// 		Command:     []string{},
-// 		Environment: map[string]interface{}{},
-// 	}
-
-// 	return linkMb
-// }
 
 func appendUniqueRule(uniqueRules []RuleRef, newRule RuleRef) []RuleRef {
 	if !containsRule(uniqueRules[:], newRule) {

@@ -22,9 +22,9 @@ func CapSysAdmin(json []byte) int {
 	}
 
 	capAddSpec := gojsonq.New().Reader(bytes.NewReader(json)).
-		From(spec + ".securityContext.capabilities.add")
+		From(spec + ".securityContext.capabilities.add").Get()
 
-	if capAddSpec != nil && strings.Contains(fmt.Sprintf("%v", capAddSpec), "SYS_ADMIN") {
+	if strings.Contains(fmt.Sprintf("%v", capAddSpec), "SYS_ADMIN") {
 		sc++
 	}
 
