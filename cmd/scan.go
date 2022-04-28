@@ -27,6 +27,7 @@ var format string
 var template string
 var schemaDir string
 var outputLocation string
+var scanDir bool
 var exitCode int
 
 func init() {
@@ -36,6 +37,7 @@ func init() {
 	scanCmd.Flags().StringVar(&schemaDir, "schema-dir", "", "Sets the directory for the json schemas")
 	scanCmd.Flags().StringVarP(&template, "template", "t", "", "Set output template, it will check for a file or read input as the")
 	scanCmd.Flags().StringVarP(&outputLocation, "output", "o", "", "Set output location")
+	scanCmd.Flags().BoolVar(&scanDir, "scan-dir", false, "scans directory for multiple files")
 	scanCmd.Flags().IntVar(&exitCode, "exit-code", 2, "Set the exit-code to use on failure")
 	rootCmd.AddCommand(scanCmd)
 }
@@ -80,6 +82,32 @@ func getInput(args []string) (File, error) {
 	return file, nil
 }
 
+func FilePathWalkDir(args []string) ([]string, error) {
+	var files []string
+	var allfiles []string
+
+	scanPath := args[0]
+
+	err := filepath.Walk(scanPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return fmt.Errorf("failed to open directory, error: %w", err)
+		}
+		if !info.IsDir() {
+			allfiles = append(allfiles, path)
+		}
+		return nil
+	})
+
+	for i, s := range allfiles {
+		ext := filepath.Ext(s)
+		if ext == ".yaml" || ext == ".json" {
+			files = append(files, s)
+		}
+		fmt.Sprintln(i)
+	}
+	return files, err
+}
+
 var scanCmd = &cobra.Command{
 	Use:     `scan [file]`,
 	Short:   "Scans Kubernetes Operator resource YAML or JSON",
@@ -99,6 +127,68 @@ var scanCmd = &cobra.Command{
 
 		rootCmd.SilenceErrors = true
 		rootCmd.SilenceUsage = true
+
+		fmt.Println(args)
+
+		if scanDir == true {
+			var files []string
+			files, err := FilePathWalkDir(args)
+			if err != nil {
+				return err
+			}
+
+			for i, f := range files {
+				var mfile []string
+				mfile = append(mfile, f)
+				fmt.Sprintln(i, mfile)
+
+				file, err := getInput(mfile)
+				if err != nil {
+					return err
+				}
+				// fmt.Println(file)
+
+				reports, err := ruler.NewRuleset(logger).Run(file.fileName, file.fileBytes, schemaDir)
+				if err != nil {
+					return err
+				}
+
+				if len(reports) == 0 {
+					return fmt.Errorf("invalid input %s", file.fileName)
+				}
+
+				var lowScore bool
+				for _, r := range reports {
+					if r.Score <= 0 {
+						lowScore = true
+						break
+					}
+				}
+
+				var buff bytes.Buffer
+				err = report.WriteReports(format, &buff, reports, template)
+				if err != nil {
+					return err
+				}
+
+				if outputLocation != "" {
+					err = ioutil.WriteFile(outputLocation, buff.Bytes(), 0644)
+					if err != nil {
+						logger.Debugf("Couldn't write output to %s", outputLocation)
+					}
+				}
+
+				out := buff.String()
+				fmt.Println(out)
+
+				if len(reports) > 0 && !lowScore {
+					return nil
+				}
+
+			}
+			os.Exit(exitCode)
+			return &ScanFailedValidationError{}
+		}
 
 		file, err := getInput(args)
 		if err != nil {
