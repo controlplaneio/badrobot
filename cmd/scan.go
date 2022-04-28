@@ -100,12 +100,60 @@ func FilePathWalkDir(args []string) ([]string, error) {
 
 	for i, s := range allfiles {
 		ext := filepath.Ext(s)
-		if ext == ".yaml" || ext == ".json" {
+		if ext == ".yaml" || ext == ".yml" || ext == ".json" {
 			files = append(files, s)
 		}
 		fmt.Sprintln(i)
 	}
 	return files, err
+}
+
+func ScanFile(files []string) error {
+
+	file, err := getInput(files)
+	if err != nil {
+		return err
+	}
+
+	reports, err := ruler.NewRuleset(logger).Run(file.fileName, file.fileBytes, schemaDir)
+	if err != nil {
+		return err
+	}
+
+	if len(reports) == 0 {
+		fmt.Errorf("invalid input %s", file.fileName)
+		return err
+	}
+
+	var lowScore bool
+	for _, r := range reports {
+		if r.Score <= 0 {
+			lowScore = true
+			break
+
+		}
+	}
+
+	var buff bytes.Buffer
+	err = report.WriteReports(format, &buff, reports, template)
+	if err != nil {
+		return err
+	}
+
+	if outputLocation != "" {
+		err = ioutil.WriteFile(outputLocation, buff.Bytes(), 0644)
+		if err != nil {
+			logger.Debugf("Couldn't write output to %s", outputLocation)
+		}
+	}
+
+	out := buff.String()
+	fmt.Println(out)
+
+	if len(reports) > 0 && !lowScore {
+		return err
+	}
+	return err
 }
 
 var scanCmd = &cobra.Command{
@@ -128,8 +176,6 @@ var scanCmd = &cobra.Command{
 		rootCmd.SilenceErrors = true
 		rootCmd.SilenceUsage = true
 
-		fmt.Println(args)
-
 		if scanDir == true {
 			var files []string
 			files, err := FilePathWalkDir(args)
@@ -142,97 +188,21 @@ var scanCmd = &cobra.Command{
 				mfile = append(mfile, f)
 				fmt.Sprintln(i, mfile)
 
-				file, err := getInput(mfile)
+				err := ScanFile(mfile)
 				if err != nil {
 					return err
 				}
-				// fmt.Println(file)
-
-				reports, err := ruler.NewRuleset(logger).Run(file.fileName, file.fileBytes, schemaDir)
-				if err != nil {
-					return err
-				}
-
-				if len(reports) == 0 {
-					return fmt.Errorf("invalid input %s", file.fileName)
-				}
-
-				var lowScore bool
-				for _, r := range reports {
-					if r.Score <= 0 {
-						lowScore = true
-						break
-					}
-				}
-
-				var buff bytes.Buffer
-				err = report.WriteReports(format, &buff, reports, template)
-				if err != nil {
-					return err
-				}
-
-				if outputLocation != "" {
-					err = ioutil.WriteFile(outputLocation, buff.Bytes(), 0644)
-					if err != nil {
-						logger.Debugf("Couldn't write output to %s", outputLocation)
-					}
-				}
-
-				out := buff.String()
-				fmt.Println(out)
-
-				if len(reports) > 0 && !lowScore {
-					return nil
-				}
-
+			}
+			os.Exit(exitCode)
+			return &ScanFailedValidationError{}
+		} else {
+			err := ScanFile(args)
+			if err != nil {
+				return err
 			}
 			os.Exit(exitCode)
 			return &ScanFailedValidationError{}
 		}
 
-		file, err := getInput(args)
-		if err != nil {
-			return err
-		}
-
-		reports, err := ruler.NewRuleset(logger).Run(file.fileName, file.fileBytes, schemaDir)
-		if err != nil {
-			return err
-		}
-
-		if len(reports) == 0 {
-			return fmt.Errorf("invalid input %s", file.fileName)
-		}
-
-		var lowScore bool
-		for _, r := range reports {
-			if r.Score <= 0 {
-				lowScore = true
-				break
-			}
-		}
-
-		var buff bytes.Buffer
-		err = report.WriteReports(format, &buff, reports, template)
-		if err != nil {
-			return err
-		}
-
-		if outputLocation != "" {
-			err = ioutil.WriteFile(outputLocation, buff.Bytes(), 0644)
-			if err != nil {
-				logger.Debugf("Couldn't write output to %s", outputLocation)
-			}
-		}
-
-		out := buff.String()
-		fmt.Println(out)
-
-		if len(reports) > 0 && !lowScore {
-			return nil
-		}
-
-		os.Exit(exitCode)
-		return &ScanFailedValidationError{}
 	},
 }
