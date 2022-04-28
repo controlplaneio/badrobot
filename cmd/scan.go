@@ -98,12 +98,11 @@ func FilePathWalkDir(args []string) ([]string, error) {
 		return nil
 	})
 
-	for i, s := range allfiles {
+	for _, s := range allfiles {
 		ext := filepath.Ext(s)
 		if ext == ".yaml" || ext == ".yml" || ext == ".json" {
 			files = append(files, s)
 		}
-		fmt.Sprintln(i)
 	}
 	return files, err
 }
@@ -183,10 +182,9 @@ var scanCmd = &cobra.Command{
 				return err
 			}
 
-			for i, f := range files {
+			for _, f := range files {
 				var mfile []string
 				mfile = append(mfile, f)
-				fmt.Sprintln(i, mfile)
 
 				err := ScanFile(mfile)
 				if err != nil {
