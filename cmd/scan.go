@@ -84,7 +84,6 @@ func getInput(args []string) (File, error) {
 
 func FilePathWalkDir(args []string) ([]string, error) {
 	var files []string
-	var allfiles []string
 
 	scanPath := args[0]
 
@@ -93,17 +92,14 @@ func FilePathWalkDir(args []string) ([]string, error) {
 			return fmt.Errorf("failed to open directory, error: %w", err)
 		}
 		if !info.IsDir() {
-			allfiles = append(allfiles, path)
+			ext := filepath.Ext(path)
+			if ext == ".yaml" || ext == ".yml" || ext == ".json" {
+				files = append(files, path)
+			}
 		}
 		return nil
 	})
 
-	for _, s := range allfiles {
-		ext := filepath.Ext(s)
-		if ext == ".yaml" || ext == ".yml" || ext == ".json" {
-			files = append(files, s)
-		}
-	}
 	return files, err
 }
 
