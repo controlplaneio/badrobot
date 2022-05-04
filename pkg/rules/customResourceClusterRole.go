@@ -24,28 +24,28 @@ func CustomResourceClusterRole(json []byte) int {
 		From("rules").
 		Only("verbs")
 
-	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[apiextensions.k8s.io]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[customresourcedefinitions]")) &&
+	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "apiextensions.k8s.io")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "customresourcedefinitions")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
 		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[apiextensions.k8s.io]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[customresourcedefinitions]")) &&
+	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "apiextensions.k8s.io")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "customresourcedefinitions")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "create")) {
 		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[apiextensions.k8s.io]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[customresourcedefinitions]")) &&
+	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "apiextensions.k8s.io")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "customresourcedefinitions")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "patch")) {
 		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[apiextensions.k8s.io]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[customresourcedefinitions]")) &&
+	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "apiextensions.k8s.io")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "customresourcedefinitions")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "update")) {
 		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[apiextensions.k8s.io]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[customresourcedefinitions]")) &&
+	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "apiextensions.k8s.io")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "customresourcedefinitions")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "delete")) {
 		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[apiextensions.k8s.io]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[customresourcedefinitions]")) &&
+	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "apiextensions.k8s.io")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "customresourcedefinitions")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "deletecollection")) {
 		rbac++
 	}

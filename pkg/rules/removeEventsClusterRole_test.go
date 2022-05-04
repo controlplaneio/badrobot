@@ -86,3 +86,31 @@ rules:
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
 }
+
+func Test_Events_Multiple_Resources(t *testing.T) {
+	var data = `
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: example-operator
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - events
+  verbs:
+  - "*"
+`
+
+	json, err := yaml.YAMLToJSON([]byte(data))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	rbac := RemoveEventsClusterRole(json)
+	if rbac != 1 {
+		t.Errorf("Got %v permissions wanted %v", rbac, 1)
+	}
+}
