@@ -25,11 +25,11 @@ func RemoveEventsClusterRole(json []byte) int {
 		Only("verbs")
 
 	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[events]")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "events")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
 		rbac++
 	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "[]")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "[events]")) &&
+		(strings.Contains(fmt.Sprintf("%v", jqResources), "events")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "delete")) &&
 		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "deletecollection")) {
 		rbac++
