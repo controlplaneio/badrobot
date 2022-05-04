@@ -120,8 +120,7 @@ func ScanFile(files []string) error {
 	}
 
 	if len(reports) == 0 {
-		fmt.Errorf("invalid input %s", file.fileName)
-		return err
+		return fmt.Errorf("invalid input %s", file.fileName)
 	}
 
 	var lowScore bool
