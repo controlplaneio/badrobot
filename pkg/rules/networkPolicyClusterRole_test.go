@@ -89,3 +89,31 @@ rules:
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
 }
+
+func Test_Network_Multiple_API_Groups(t *testing.T) {
+	var data = `
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: example-operator
+rules:
+- apiGroups:
+  - apps
+  - "networking.k8s.io"
+  resources:
+  - "*"
+  verbs:
+  - "*"
+`
+
+	json, err := yaml.YAMLToJSON([]byte(data))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	rbac := NetworkPolicyClusterRole(json)
+	if rbac != 1 {
+		t.Errorf("Got %v permissions wanted %v", rbac, 1)
+	}
+}
