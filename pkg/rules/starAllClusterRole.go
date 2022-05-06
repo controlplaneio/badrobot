@@ -2,45 +2,40 @@
 package rules
 
 import (
-	"bytes"
-	"fmt"
-	"strings"
+	"encoding/json"
 
-	"github.com/thedevsaddam/gojsonq/v2"
+	rbacv1 "k8s.io/api/rbac/v1"
 )
 
-func StarAllClusterRole(json []byte) int {
+func StarAllClusterRole(input []byte) int {
 	rbac := 0
 
-	jqAPI := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules").
-		Only("apiGroups")
+	clusterRole := &rbacv1.ClusterRole{}
+	err := json.Unmarshal(input, clusterRole)
+	if err != nil {
+		return 0
+	}
 
-	jqResources := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules").
-		Only("resources")
-
-	jqVerbs := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules").
-		Only("verbs")
-
-	if strings.Contains(fmt.Sprintf("%v", jqAPI), "*") &&
-		strings.Contains(fmt.Sprintf("%v", jqResources), "*") &&
-		strings.Contains(fmt.Sprintf("%v", jqVerbs), "*") {
-		rbac++
-	} else if strings.Contains(fmt.Sprintf("%v", jqAPI), "*") &&
-		strings.Contains(fmt.Sprintf("%v", jqResources), "*") &&
-		strings.Contains(fmt.Sprintf("%v", jqVerbs), "get") &&
-		strings.Contains(fmt.Sprintf("%v", jqVerbs), "create") &&
-		strings.Contains(fmt.Sprintf("%v", jqVerbs), "update") &&
-		strings.Contains(fmt.Sprintf("%v", jqVerbs), "list") &&
-		strings.Contains(fmt.Sprintf("%v", jqVerbs), "patch") &&
-		strings.Contains(fmt.Sprintf("%v", jqVerbs), "watch") &&
-		strings.Contains(fmt.Sprintf("%v", jqVerbs), "delete") &&
-		strings.Contains(fmt.Sprintf("%v", jqVerbs), "deletecollection") {
-		rbac++
+	for _, rule := range clusterRole.Rules {
+		if contains("*", rule.APIGroups) &&
+			contains("*", rule.Resources) &&
+			contains("*", rule.Verbs) {
+			rbac++
+		} else if contains("*", rule.APIGroups) &&
+			contains("*", rule.Resources) &&
+			containsAll([]string{
+				"get",
+				"create",
+				"update",
+				"list",
+				"patch",
+				"watch",
+				"delete",
+				"deletecollection",
+			}, rule.Verbs) {
+			rbac++
+		}
 	}
 
 	return rbac
-
 }

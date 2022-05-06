@@ -20,3 +20,16 @@ func containsAny(needles []string, haystack []string) bool {
 
 	return false
 }
+
+func containsAll(needles []string, haystack []string) bool {
+OUTER:
+	for _, needle := range needles {
+		for _, item := range haystack {
+			if needle == item {
+				continue OUTER
+			}
+		}
+		return false
+	}
+	return true
+}
