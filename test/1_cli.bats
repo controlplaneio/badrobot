@@ -292,15 +292,15 @@ teardown() {
 }
 
 # OPR-R15-RBAC
-@test "fails ClusterRole has full access to pods (star)" {
+@test "passes ClusterRole has full access to pods (star)" {
   run _app "${TEST_DIR}/asset/cr-pods-star.yaml"
-  assert_lt_zero_points
+  assert_zero_points
 }
 
 # OPR-R15-RBAC
-@test "fails ClusterRole has get and create permissions on pods (verbs)" {
+@test "passes ClusterRole has get and create permissions on pods (verbs)" {
   run _app "${TEST_DIR}/asset/cr-pods-verbs.yaml"
-  assert_lt_zero_points
+  assert_zero_points
 }
 
 # OPR-R15-RBAC
@@ -312,6 +312,12 @@ teardown() {
 # OPR-R15-RBAC
 @test "fails ClusterRole has get and create permissions on pods/exec (verbs)" {
   run _app "${TEST_DIR}/asset/cr-podsexec-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R15-RBAC
+@test "fails ClusterRole has get and create permissions on pods/exec (separate verbs)" {
+  run _app "${TEST_DIR}/asset/cr-podsexec-separate-verbs.yaml"
   assert_lt_zero_points
 }
 
