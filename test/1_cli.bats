@@ -352,7 +352,7 @@ teardown() {
 }
 
 # OPR-R19-RBAC
-@test "fails ClusterRole has full permissions to modify pod/log (verbs)" {
+@test "fails ClusterRole has full permissions to modify pod/log (single verb)" {
   run _app "${TEST_DIR}/asset/cr-podslog-single-verb.yaml"
   assert_lt_zero_points
 }
