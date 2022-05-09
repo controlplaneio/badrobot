@@ -10,6 +10,8 @@ import (
 func ExecPodsClusterRole(input []byte) int {
 	rbac := 0
 
+	var foundGet, foundCreate bool
+
 	clusterRole := &rbacv1.ClusterRole{}
 	err := json.Unmarshal(input, clusterRole)
 	if err != nil {
@@ -19,12 +21,22 @@ func ExecPodsClusterRole(input []byte) int {
 	for _, rule := range clusterRole.Rules {
 		if contains("", rule.APIGroups) &&
 			contains("pods/exec", rule.Resources) &&
-			contains("*", rule.Verbs) {
+			(contains("*", rule.Verbs) || containsAll([]string{"create", "get"}, rule.Verbs)) {
 			rbac++
 		} else if contains("", rule.APIGroups) &&
 			contains("pods/exec", rule.Resources) &&
-			containsAny([]string{"create", "get"}, rule.Verbs) {
-			rbac++
+			(contains("*", rule.Verbs) || contains("get", rule.Verbs)) {
+			foundGet = true
+			if foundGet && foundCreate {
+				rbac++
+			}
+		} else if contains("", rule.APIGroups) &&
+			contains("pods/exec", rule.Resources) &&
+			(contains("*", rule.Verbs) || contains("create", rule.Verbs)) {
+			foundCreate = true
+			if foundGet && foundCreate {
+				rbac++
+			}
 		}
 	}
 
