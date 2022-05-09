@@ -514,13 +514,13 @@ teardown() {
 }
 
 # OPR-R26-RBAC
-@test "fails ClusterRole has full ermissions over node (star)" {
+@test "passes ClusterRole has full ermissions over node (star)" {
   run _app "${TEST_DIR}/asset/cr-node-star.yaml"
-  assert_lt_zero_points
+  assert_zero_points
 }
 
 # OPR-R26-RBAC
-@test "fails ClusterRole has full permissions over node (verbs)" {
+@test "passes ClusterRole has full permissions over node (verbs)" {
   run _app "${TEST_DIR}/asset/cr-node-verbs.yaml"
   assert_lt_zero_points
 }
