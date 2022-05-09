@@ -17,6 +17,7 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - persistentvolumes
   - persistentvolumeclaims
   verbs:
   - "*"
@@ -71,6 +72,7 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - persistentvolumes
   - persistentvolumeclaims
   verbs:
   - delete
@@ -104,6 +106,7 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - persistentvolumes
   - persistentvolumeclaims
   verbs:
   - delete
@@ -151,8 +154,55 @@ rules:
   - ""
   - apps
   resources:
+  - persistentvolumes
   - persistentvolumeclaims
   - deployments
+  verbs:
+  - delete
+  - deletecollection
+  - create
+  - patch
+  - get
+  - list
+  - update
+  - watch
+`
+	json, err := yaml.YAMLToJSON([]byte(data))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	rbac := PersistentVolumeClusterRole(json)
+	if rbac != 1 {
+		t.Errorf("Got %v permissions wanted %v", rbac, 1)
+	}
+}
+
+func Test_PVC_Separate_Resources(t *testing.T) {
+	var data = `
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: example-operator
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumes
+  verbs:
+  - delete
+  - deletecollection
+  - create
+  - patch
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumeclaims
   verbs:
   - delete
   - deletecollection

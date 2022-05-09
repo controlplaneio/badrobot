@@ -9,6 +9,7 @@ import (
 
 func PersistentVolumeClusterRole(input []byte) int {
 	rbac := 0
+	var foundPV, foundPVC bool
 
 	clusterRole := &rbacv1.ClusterRole{}
 	err := json.Unmarshal(input, clusterRole)
@@ -18,9 +19,23 @@ func PersistentVolumeClusterRole(input []byte) int {
 
 	for _, rule := range clusterRole.Rules {
 		if contains("", rule.APIGroups) &&
-			contains("persistentvolumeclaims", rule.Resources) &&
+			containsAll([]string{"persistentvolumes", "persistentvolumeclaims"}, rule.Resources) &&
 			containsAny([]string{"*", "get", "list", "create", "patch", "update", "delete", "deletecollection", "watch"}, rule.Verbs) {
 			rbac++
+		} else if contains("", rule.APIGroups) &&
+			contains("persistentvolumes", rule.Resources) &&
+			containsAny([]string{"*", "get", "list", "create", "patch", "update", "delete", "deletecollection", "watch"}, rule.Verbs) {
+			foundPV = true
+			if foundPV && foundPVC {
+				rbac++
+			}
+		} else if contains("", rule.APIGroups) &&
+			contains("persistentvolumeclaims", rule.Resources) &&
+			containsAny([]string{"*", "get", "list", "create", "patch", "update", "delete", "deletecollection", "watch"}, rule.Verbs) {
+			foundPVC = true
+			if foundPV && foundPVC {
+				rbac++
+			}
 		}
 	}
 
