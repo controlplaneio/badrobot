@@ -522,7 +522,7 @@ teardown() {
 # OPR-R26-RBAC
 @test "passes ClusterRole has full permissions over node (verbs)" {
   run _app "${TEST_DIR}/asset/cr-node-verbs.yaml"
-  assert_lt_zero_points
+  assert_zero_points
 }
 
 # OPR-R26-RBAC
