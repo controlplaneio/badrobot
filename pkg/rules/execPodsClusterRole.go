@@ -2,54 +2,43 @@
 package rules
 
 import (
-	"bytes"
-	"fmt"
-	"regexp"
-	"strconv"
-	"strings"
+	"encoding/json"
 
-	"github.com/thedevsaddam/gojsonq/v2"
+	rbacv1 "k8s.io/api/rbac/v1"
 )
 
-func ExecPodsClusterRole(json []byte) int {
+func ExecPodsClusterRole(input []byte) int {
 	rbac := 0
 
-	jqRules := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules")
+	var foundGet, foundCreate bool
 
-	numElementsStr := fmt.Sprintf("%v", jqRules.Count())
-	numElementsVar, _ := strconv.Atoi(numElementsStr)
+	clusterRole := &rbacv1.ClusterRole{}
+	err := json.Unmarshal(input, clusterRole)
+	if err != nil {
+		return 0
+	}
 
-	rePods := regexp.MustCompile(`(pods):?[^/]`)
-	rePodsExec := regexp.MustCompile(`(pods/exec)`)
-
-	for i := 1; i <= numElementsVar; i++ {
-		apiGroups := fmt.Sprintf("%v", jqRules.Nth(i).(map[string]interface{})["apiGroups"])
-		resources := fmt.Sprintf("%v", jqRules.Nth(i).(map[string]interface{})["resources"])
-		verbs := fmt.Sprintf("%v", jqRules.Nth(i).(map[string]interface{})["verbs"])
-
-		if strings.Contains(fmt.Sprintf("%v", apiGroups), "[]") &&
-			rePods.MatchString(fmt.Sprintf("%v", resources)) &&
-			strings.Contains(fmt.Sprintf("%v", verbs), "*") {
+	for _, rule := range clusterRole.Rules {
+		if contains("", rule.APIGroups) &&
+			contains("pods/exec", rule.Resources) &&
+			(contains("*", rule.Verbs) || containsAll([]string{"create", "get"}, rule.Verbs)) {
 			rbac++
-		} else if strings.Contains(fmt.Sprintf("%v", apiGroups), "[]") &&
-			rePods.MatchString(fmt.Sprintf("%v", resources)) &&
-			strings.Contains(fmt.Sprintf("%v", verbs), "get") &&
-			strings.Contains(fmt.Sprintf("%v", verbs), "create") {
-			rbac++
-		} else if strings.Contains(fmt.Sprintf("%v", apiGroups), "[]") &&
-			rePodsExec.MatchString(fmt.Sprintf("%v", resources)) &&
-			strings.Contains(fmt.Sprintf("%v", verbs), "*") {
-			rbac++
-		} else if strings.Contains(fmt.Sprintf("%v", apiGroups), "[]") &&
-			rePodsExec.MatchString(fmt.Sprintf("%v", resources)) &&
-			strings.Contains(fmt.Sprintf("%v", verbs), "get") &&
-			strings.Contains(fmt.Sprintf("%v", verbs), "create") {
-			rbac++
+		} else if contains("", rule.APIGroups) &&
+			contains("pods/exec", rule.Resources) &&
+			(contains("*", rule.Verbs) || contains("get", rule.Verbs)) {
+			foundGet = true
+			if foundGet && foundCreate {
+				rbac++
+			}
+		} else if contains("", rule.APIGroups) &&
+			contains("pods/exec", rule.Resources) &&
+			(contains("*", rule.Verbs) || contains("create", rule.Verbs)) {
+			foundCreate = true
+			if foundGet && foundCreate {
+				rbac++
+			}
 		}
-
 	}
 
 	return rbac
-
 }
