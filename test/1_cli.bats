@@ -274,10 +274,10 @@ teardown() {
 
 # TBD KGW Split resources test. Requires additional logic in the ruleset
 # # OPR-R13-RBAC
-# @test "fails ClusterRole has full access to ClusterRoles and Bindings (separate)" {
-#   run _app "${TEST_DIR}/asset/cr-all-crbs-separate.yaml"
-#   assert_lt_zero_points
-# }
+@test "fails ClusterRole has full access to ClusterRoles and Bindings (separate)" {
+  run _app "${TEST_DIR}/asset/cr-all-crbs-separate.yaml"
+  assert_lt_zero_points
+}
 
 # OPR-R14-RBAC
 @test "fails ClusterRole has access to Kubernetes secrets (star)" {

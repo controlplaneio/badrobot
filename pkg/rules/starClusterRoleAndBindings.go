@@ -9,6 +9,7 @@ import (
 
 func StarClusterRoleAndBindings(input []byte) int {
 	rbac := 0
+	var foundCR, foundCRB bool
 
 	clusterRole := &rbacv1.ClusterRole{}
 	err := json.Unmarshal(input, clusterRole)
@@ -19,11 +20,7 @@ func StarClusterRoleAndBindings(input []byte) int {
 	for _, rule := range clusterRole.Rules {
 		if contains("rbac.authorization.k8s.io", rule.APIGroups) &&
 			containsAll([]string{"clusterroles", "clusterrolebindings"}, rule.Resources) &&
-			contains("*", rule.Verbs) {
-			rbac++
-		} else if contains("rbac.authorization.k8s.io", rule.APIGroups) &&
-			containsAll([]string{"clusterroles", "clusterrolebindings"}, rule.Resources) &&
-			containsAll([]string{
+			(contains("*", rule.Verbs) || containsAll([]string{
 				"get",
 				"create",
 				"update",
@@ -32,8 +29,40 @@ func StarClusterRoleAndBindings(input []byte) int {
 				"watch",
 				"delete",
 				"deletecollection",
-			}, rule.Verbs) {
+			}, rule.Verbs)) {
 			rbac++
+		} else if contains("rbac.authorization.k8s.io", rule.APIGroups) &&
+			contains("clusterroles", rule.Resources) &&
+			(contains("*", rule.Verbs) || containsAll([]string{
+				"get",
+				"create",
+				"update",
+				"list",
+				"patch",
+				"watch",
+				"delete",
+				"deletecollection",
+			}, rule.Verbs)) {
+			foundCR = true
+			if foundCR && foundCRB {
+				rbac++
+			}
+		} else if contains("rbac.authorization.k8s.io", rule.APIGroups) &&
+			contains("clusterrolebindings", rule.Resources) &&
+			(contains("*", rule.Verbs) || containsAll([]string{
+				"get",
+				"create",
+				"update",
+				"list",
+				"patch",
+				"watch",
+				"delete",
+				"deletecollection",
+			}, rule.Verbs)) {
+			foundCRB = true
+			if foundCR && foundCRB {
+				rbac++
+			}
 		}
 	}
 
