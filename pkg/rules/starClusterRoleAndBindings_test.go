@@ -176,3 +176,35 @@ rules:
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
 }
+
+func Test_ClusterRole_Split_Rules(t *testing.T) {
+	var data = `
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: example-operator
+rules:
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - clusterrolebindings
+  verbs:
+  - "*"
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - clusterroles
+  verbs:
+  - "*"
+`
+	json, err := yaml.YAMLToJSON([]byte(data))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	rbac := StarClusterRoleAndBindings(json)
+	if rbac != 1 {
+		t.Errorf("Got %v permissions wanted %v", rbac, 1)
+	}
+}
