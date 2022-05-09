@@ -18,7 +18,7 @@ func ServiceAccountClusterRole(input []byte) int {
 
 	for _, rule := range clusterRole.Rules {
 		if contains("", rule.APIGroups) &&
-			containsAny([]string{"serviceaccounts", "serviceaccounts/token"}, rule.Resources) &&
+			contains("serviceaccounts/token", rule.Resources) &&
 			containsAny([]string{"*", "create"}, rule.Verbs) {
 			rbac++
 		}

@@ -430,15 +430,15 @@ teardown() {
 }
 
 # OPR-R23-RBAC
-@test "fails ClusterRole has full permissions over service accounts (star)" {
+@test "passes ClusterRole has full permissions over service accounts (star)" {
   run _app "${TEST_DIR}/asset/cr-sa-star.yaml"
-  assert_lt_zero_points
+  assert_zero_points
 }
 
 # OPR-R23-RBAC
-@test "fails ClusterRole has full permissions over service accounts (verbs)" {
+@test "passes ClusterRole has full permissions over service accounts (verbs)" {
   run _app "${TEST_DIR}/asset/cr-sa-verbs.yaml"
-  assert_lt_zero_points
+  assert_zero_points
 }
 
 # OPR-R23-RBAC

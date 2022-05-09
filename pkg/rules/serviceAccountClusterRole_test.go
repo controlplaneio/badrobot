@@ -17,7 +17,7 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - serviceaccounts
+  - serviceaccounts/token
   verbs:
   - "*"
 `
@@ -44,7 +44,7 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - serviceaccounts
+  - serviceaccounts/token
   verbs:
   - get
 `
@@ -98,7 +98,7 @@ rules:
   - ""
   - apps
   resources:
-  - serviceaccounts
+  - serviceaccounts/token
   verbs:
   - "*"
 `
@@ -126,7 +126,7 @@ rules:
   - ""
   resources:
   - pods
-  - serviceaccounts
+  - serviceaccounts/token
   verbs:
   - "*"
 `
@@ -176,8 +176,8 @@ rules:
 	}
 
 	rbac := ServiceAccountClusterRole(json)
-	if rbac != 2 {
-		t.Errorf("Got %v permissions wanted %v", rbac, 2)
+	if rbac != 1 {
+		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
 }
 
@@ -192,7 +192,7 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - serviceaccounts
+  - serviceaccounts/token
   verbs:
   - "*"
 `
