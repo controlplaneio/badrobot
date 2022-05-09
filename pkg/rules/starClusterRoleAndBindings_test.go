@@ -1,8 +1,9 @@
 package rules
 
 import (
-	"github.com/ghodss/yaml"
 	"testing"
+
+	"github.com/ghodss/yaml"
 )
 
 func Test_ClusterRoles_Permissions(t *testing.T) {
@@ -72,6 +73,89 @@ rules:
   resources:
   - clusterrolebindings
   - clusterroles
+  verbs:
+  - get
+  - create
+  - list
+  - patch
+  - update
+  - watch
+  - delete
+  - deletecollection
+`
+	json, err := yaml.YAMLToJSON([]byte(data))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	rbac := StarClusterRoleAndBindings(json)
+	if rbac != 1 {
+		t.Errorf("Got %v permissions wanted %v", rbac, 1)
+	}
+}
+
+func Test_ClusterRoles_Multiple_Rules(t *testing.T) {
+	var data = `
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: example-operator
+rules:
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - clusterrolebindings
+  - clusterroles
+  verbs:
+  - get
+  - create
+  - list
+  - patch
+  - update
+  - watch
+  - delete
+  - deletecollection
+- apiGroups:
+  - apps
+  resources:
+  - deployment
+  verbs:
+  - get
+  - create
+  - list
+  - patch
+  - update
+  - watch
+  - delete
+  - deletecollection
+`
+	json, err := yaml.YAMLToJSON([]byte(data))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	rbac := StarClusterRoleAndBindings(json)
+	if rbac != 1 {
+		t.Errorf("Got %v permissions wanted %v", rbac, 1)
+	}
+}
+
+func Test_ClusterRole_Extra_Resources(t *testing.T) {
+	var data = `
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: example-operator
+rules:
+- apiGroups:
+  - rbac.authorization.k8s.io
+  - apps
+  resources:
+  - clusterrolebindings
+  - clusterroles
+  - deployments
   verbs:
   - get
   - create

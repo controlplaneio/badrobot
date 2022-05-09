@@ -2,78 +2,27 @@
 package rules
 
 import (
-	"bytes"
-	"fmt"
-	"strings"
+	"encoding/json"
 
-	"github.com/thedevsaddam/gojsonq/v2"
+	rbacv1 "k8s.io/api/rbac/v1"
 )
 
-func NetworkPolicyClusterRole(json []byte) int {
+func NetworkPolicyClusterRole(input []byte) int {
 	rbac := 0
 
-	jqAPI := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules").
-		Only("apiGroups")
+	clusterRole := &rbacv1.ClusterRole{}
+	err := json.Unmarshal(input, clusterRole)
+	if err != nil {
+		return 0
+	}
 
-	jqResources := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules").
-		Only("resources")
-
-	jqVerbs := gojsonq.New().Reader(bytes.NewReader(json)).
-		From("rules").
-		Only("verbs")
-
-	if (strings.Contains(fmt.Sprintf("%v", jqAPI), "networking.k8s.io")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "networking.k8s.io")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "create")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "networking.k8s.io")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "update")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "networking.k8s.io")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "patch")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "networking.k8s.io")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "delete")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "networking.k8s.io")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "*")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "deletecollection")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "networking.k8s.io")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "networkpolicy")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "*")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "networking.k8s.io")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "networkpolicy")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "create")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "networking.k8s.io")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "networkpolicy")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "update")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "networking.k8s.io")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "networkpolicy")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "patch")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "networking.k8s.io")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "networkpolicy")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "delete")) {
-		rbac++
-	} else if (strings.Contains(fmt.Sprintf("%v", jqAPI), "networking.k8s.io")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqResources), "networkpolicy")) &&
-		(strings.Contains(fmt.Sprintf("%v", jqVerbs), "deletecollection")) {
-		rbac++
+	for _, rule := range clusterRole.Rules {
+		if contains("networking.k8s.io", rule.APIGroups) &&
+			containsAny([]string{"networkpolicy", "networkpolicies", "*"}, rule.Resources) &&
+			containsAny([]string{"*", "create", "update", "patch", "delete", "deletecollection"}, rule.Verbs) {
+			rbac++
+		}
 	}
 
 	return rbac
-
 }
