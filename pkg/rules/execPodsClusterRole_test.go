@@ -64,7 +64,7 @@ rules:
 	}
 }
 
-func Test_Pods_Exec_Verbs_Permissions(t *testing.T) {
+func Test_Pods_Pods_Exec_Verbs_Permissions(t *testing.T) {
 	var data = `
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -75,6 +75,7 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - pods
   - pods/exec
   verbs:
   - get
@@ -154,7 +155,7 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - pods/exec
+  - pods
   verbs:
   - get
 - apiGroups:
@@ -163,6 +164,59 @@ rules:
   - pods/exec
   verbs:
   - create
+`
+	json, err := yaml.YAMLToJSON([]byte(data))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	rbac := ExecPodsClusterRole(json)
+	if rbac != 1 {
+		t.Errorf("Got %v permissions wanted %v", rbac, 1)
+	}
+}
+
+func Test_Pods_Verbs_Get_Only(t *testing.T) {
+	var data = `
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: example-operator
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+`
+	json, err := yaml.YAMLToJSON([]byte(data))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	rbac := ExecPodsClusterRole(json)
+	if rbac != 0 {
+		t.Errorf("Got %v permissions wanted %v", rbac, 0)
+	}
+}
+
+func Test_Pods_Pods_Exec_Star_Permissions(t *testing.T) {
+	var data = `
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: example-operator
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - pods/exec
+  verbs:
+  - "*"
 `
 	json, err := yaml.YAMLToJSON([]byte(data))
 	if err != nil {

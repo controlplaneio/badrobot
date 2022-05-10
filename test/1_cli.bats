@@ -298,26 +298,68 @@ teardown() {
 }
 
 # OPR-R15-RBAC
-@test "passes ClusterRole has get and create permissions on pods (verbs)" {
+@test "passes ClusterRole only has get and create permissions on pods (verbs)" {
   run _app "${TEST_DIR}/asset/cr-pods-verbs.yaml"
   assert_zero_points
 }
 
 # OPR-R15-RBAC
-@test "fails ClusterRole has full access to pods/exec (star)" {
+@test "passes ClusterRole has full access to pods/exec (star)" {
   run _app "${TEST_DIR}/asset/cr-podsexec-star.yaml"
-  assert_lt_zero_points
+  assert_zero_points
 }
 
 # OPR-R15-RBAC
-@test "fails ClusterRole has get and create permissions on pods/exec (verbs)" {
+@test "passes ClusterRole only has get and create permissions on pods/exec (verbs)" {
   run _app "${TEST_DIR}/asset/cr-podsexec-verbs.yaml"
+  assert_zero_points
+}
+
+# OPR-R15-RBAC
+@test "passes ClusterRole has incorrect permissions on pods and pods/exec (incorrect verbs)" {
+  run _app "${TEST_DIR}/asset/cr-pods-podsexec-incorrect-verbs.yaml"
+  assert_zero_points
+}
+
+# OPR-R15-RBAC
+@test "fails ClusterRole has full permissions on pods and pods/exec (star all resources)" {
+  run _app "${TEST_DIR}/asset/cr-pods-podsexec-star.yaml"
   assert_lt_zero_points
 }
 
 # OPR-R15-RBAC
-@test "fails ClusterRole has get and create permissions on pods/exec (separate verbs)" {
-  run _app "${TEST_DIR}/asset/cr-podsexec-separate-verbs.yaml"
+@test "fails ClusterRole has full permissions on pods and pods/exec (all verbs)" {
+  run _app "${TEST_DIR}/asset/cr-pods-podsexec-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R15-RBAC
+@test "fails ClusterRole has full permissions on pods and pods/exec (star pod verbs pods/exec)" {
+  run _app "${TEST_DIR}/asset/cr-pods-star-podsexec-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R15-RBAC
+@test "fails ClusterRole has full permissions on pods and pods/exec (verbs pod star pods/exec)" {
+  run _app "${TEST_DIR}/asset/cr-pods-verbs-podsexec-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R15-RBAC
+@test "fails ClusterRole has full permissions on pods and pods/exec (exact verbs)" {
+  run _app "${TEST_DIR}/asset/cr-pods-podsexec-exact-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R15-RBAC
+@test "fails ClusterRole has full permissions on pods and pods/exec (combined star)" {
+  run _app "${TEST_DIR}/asset/cr-pods-podsexec-combined-star.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R15-RBAC
+@test "fails ClusterRole has full permissions on pods and pods/exec (combined verbs)" {
+  run _app "${TEST_DIR}/asset/cr-pods-podsexec-combined-verbs.yaml"
   assert_lt_zero_points
 }
 
