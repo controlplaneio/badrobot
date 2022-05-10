@@ -7,6 +7,18 @@ rules:
   - ""
   resources:
   - persistentvolumes
+  verbs:
+  - delete
+  - deletecollection
+  - create
+  - patch
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
   - persistentvolumeclaims
   verbs:
   - delete

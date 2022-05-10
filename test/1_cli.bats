@@ -465,6 +465,12 @@ teardown() {
   assert_lt_zero_points
 }
 
+# OPR-R24-RBAC
+@test "fails ClusterRole has read, write or delete permissions over persistent volume claim (separate)" {
+  run _app "${TEST_DIR}/asset/cr-pvc-separate-resources.yaml"
+  assert_lt_zero_points
+}
+
 # Network with get verb
 @test "passes ClusterRole only has get permissions for network (star)" {
   run _app "${TEST_DIR}/asset/cr-network-get.yaml"
