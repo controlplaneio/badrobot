@@ -17,7 +17,7 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - nodes
+  - nodes/proxy
   verbs:
   - "*"
 `
