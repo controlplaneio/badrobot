@@ -6,7 +6,7 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - pods/exec
+  - pods
   verbs:
   - get
 - apiGroups:
