@@ -9,5 +9,4 @@ rules:
   - pods
   - pods/exec
   verbs:
-  - get
-  - create
+  - "*"
