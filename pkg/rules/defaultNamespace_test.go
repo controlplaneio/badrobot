@@ -1,8 +1,9 @@
 package rules
 
 import (
-	"github.com/ghodss/yaml"
 	"testing"
+
+	"github.com/ghodss/yaml"
 )
 
 // -- TODO KGW Write tests
@@ -21,7 +22,7 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	namespace := DefaultNamespace(json)
+	namespace, err := DefaultNamespace(json)
 	if namespace != 0 {
 		t.Errorf("Got %v namespace wanted %v", namespace, 0)
 	}
@@ -41,7 +42,11 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	namespace := DefaultNamespace(json)
+	namespace, err := DefaultNamespace(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if namespace != 1 {
 		t.Errorf("Got %v namespace wanted %v", namespace, 1)
 	}

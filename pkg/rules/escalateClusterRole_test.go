@@ -27,7 +27,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := EscalateClusterRole(json)
+	rbac, err := EscalateClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 1 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
@@ -60,7 +64,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := EscalateClusterRole(json)
+	rbac, err := EscalateClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 1 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
@@ -86,7 +94,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := EscalateClusterRole(json)
+	rbac, err := EscalateClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 0 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 0)
 	}

@@ -7,7 +7,7 @@ import (
 	rbacv1 "k8s.io/api/rbac/v1"
 )
 
-func ExecPodsClusterRole(input []byte) int {
+func ExecPodsClusterRole(input []byte) (int, error) {
 	rbac := 0
 
 	var foundPodsGet, foundExecCreate bool
@@ -15,7 +15,7 @@ func ExecPodsClusterRole(input []byte) int {
 	clusterRole := &rbacv1.ClusterRole{}
 	err := json.Unmarshal(input, clusterRole)
 	if err != nil {
-		return 0
+		return -1, err
 	}
 
 	for _, rule := range clusterRole.Rules {
@@ -41,5 +41,5 @@ func ExecPodsClusterRole(input []byte) int {
 
 	}
 
-	return rbac
+	return rbac, nil
 }
