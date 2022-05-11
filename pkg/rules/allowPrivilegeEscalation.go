@@ -9,7 +9,7 @@ import (
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
-func AllowPrivilegeEscalation(json []byte) int {
+func AllowPrivilegeEscalation(json []byte) (int, error) {
 	sc := 0
 	spec := getSpecSelector(json)
 
@@ -28,5 +28,5 @@ func AllowPrivilegeEscalation(json []byte) int {
 		sc++
 	}
 
-	return jqContainers.Count() + sc
+	return jqContainers.Count() + sc, nil
 }

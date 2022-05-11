@@ -9,7 +9,7 @@ import (
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
-func KubeSystemNamespace(json []byte) int {
+func KubeSystemNamespace(json []byte) (int, error) {
 	namespace := 0
 
 	jqNS := gojsonq.New().Reader(bytes.NewReader(json)).
@@ -28,5 +28,5 @@ func KubeSystemNamespace(json []byte) int {
 		namespace++
 	}
 
-	return namespace
+	return namespace, nil
 }

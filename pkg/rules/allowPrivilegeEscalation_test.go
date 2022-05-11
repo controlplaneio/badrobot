@@ -1,8 +1,9 @@
 package rules
 
 import (
-	"github.com/ghodss/yaml"
 	"testing"
+
+	"github.com/ghodss/yaml"
 )
 
 func Test_AllowPrivilegeEscalation_Deploy(t *testing.T) {
@@ -30,7 +31,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	securityContext := AllowPrivilegeEscalation(json)
+	securityContext, err := AllowPrivilegeEscalation(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if securityContext != 3 {
 		t.Errorf("Got %v securityContext wanted %v", securityContext, 3)
 	}
@@ -66,7 +71,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	securityContext := AllowPrivilegeEscalation(json)
+	securityContext, err := AllowPrivilegeEscalation(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if securityContext != 0 {
 		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}

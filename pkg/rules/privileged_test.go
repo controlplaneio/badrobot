@@ -1,8 +1,9 @@
 package rules
 
 import (
-	"github.com/ghodss/yaml"
 	"testing"
+
+	"github.com/ghodss/yaml"
 )
 
 func Test_Privileged_Pod(t *testing.T) {
@@ -22,7 +23,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	securityContext := Privileged(json)
+	securityContext, err := Privileged(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if securityContext != 1 {
 		t.Errorf("Got %v securityContext wanted %v", securityContext, 1)
 	}
@@ -45,7 +50,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	securityContext := Privileged(json)
+	securityContext, err := Privileged(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if securityContext != 0 {
 		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}
@@ -81,7 +90,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	securityContext := Privileged(json)
+	securityContext, err := Privileged(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if securityContext != 0 {
 		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}

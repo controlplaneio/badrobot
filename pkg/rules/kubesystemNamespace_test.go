@@ -22,7 +22,11 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	namespace := KubeSystemNamespace(json)
+	namespace, err := KubeSystemNamespace(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if namespace != 0 {
 		t.Errorf("Got %v namespace wanted %v", namespace, 0)
 	}
@@ -42,7 +46,11 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	namespace := KubeSystemNamespace(json)
+	namespace, err := KubeSystemNamespace(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if namespace != 1 {
 		t.Errorf("Got %v namespace wanted %v", namespace, 0)
 	}

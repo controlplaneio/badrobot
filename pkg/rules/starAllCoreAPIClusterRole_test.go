@@ -27,7 +27,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := StarAllCoreAPIClusterRole(json)
+	rbac, err := StarAllCoreAPIClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 1 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
@@ -54,7 +58,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := StarAllCoreAPIClusterRole(json)
+	rbac, err := StarAllCoreAPIClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 0 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 0)
 	}
@@ -87,7 +95,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := StarAllCoreAPIClusterRole(json)
+	rbac, err := StarAllCoreAPIClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 1 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
@@ -133,7 +145,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := StarAllCoreAPIClusterRole(json)
+	rbac, err := StarAllCoreAPIClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 1 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
@@ -164,7 +180,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := StarAllCoreAPIClusterRole(json)
+	rbac, err := StarAllCoreAPIClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 0 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 0)
 	}

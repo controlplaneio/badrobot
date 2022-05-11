@@ -9,7 +9,7 @@ import (
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
-func ClusterAdmin(json []byte) int {
+func ClusterAdmin(json []byte) (int, error) {
 	rbac := 0
 
 	jqCRB := gojsonq.New().Reader(bytes.NewReader(json)).
@@ -20,6 +20,6 @@ func ClusterAdmin(json []byte) int {
 	if reCRB.MatchString(fmt.Sprintf("%v", jqCRB)) {
 		rbac++
 	}
-	return rbac
+	return rbac, nil
 
 }

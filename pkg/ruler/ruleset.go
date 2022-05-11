@@ -432,7 +432,7 @@ func (rs *Ruleset) generateReport(fileName string, json []byte, schemaDir string
 	var wg sync.WaitGroup
 	for _, rule := range rs.Rules {
 		wg.Add(1)
-		go eval(json, rule, ch, &wg)
+		go eval(json, rule, ch, &wg, rs.logger)
 	}
 	wg.Wait()
 	close(ch)
@@ -478,7 +478,7 @@ func (rs *Ruleset) generateReport(fileName string, json []byte, schemaDir string
 	return report
 }
 
-func eval(json []byte, rule Rule, ch chan RuleRef, wg *sync.WaitGroup) {
+func eval(json []byte, rule Rule, ch chan RuleRef, wg *sync.WaitGroup, logger *zap.SugaredLogger) {
 	defer wg.Done()
 
 	containers, err := rule.Eval(json)
@@ -487,6 +487,9 @@ func eval(json []byte, rule Rule, ch chan RuleRef, wg *sync.WaitGroup) {
 	switch err.(type) {
 	case *NotSupportedError:
 		return
+	default:
+		logger.Infow("error evaluating rule, skipping", "Rule", rule.ID, "Error", err)
+		logger.Debug("Input JSON: ", string(json))
 	}
 
 	result := RuleRef{

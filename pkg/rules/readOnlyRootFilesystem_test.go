@@ -1,8 +1,9 @@
 package rules
 
 import (
-	"github.com/ghodss/yaml"
 	"testing"
+
+	"github.com/ghodss/yaml"
 )
 
 func Test_ReadOnlyRootFilesystem(t *testing.T) {
@@ -28,7 +29,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	containers := ReadOnlyRootFilesystem(json)
+	containers, err := ReadOnlyRootFilesystem(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if containers != 1 {
 		t.Errorf("Got %v containers wanted %v", containers, 1)
 	}
@@ -56,7 +61,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	securityContext := ReadOnlyRootFilesystem(json)
+	securityContext, err := ReadOnlyRootFilesystem(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if securityContext != 0 {
 		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}
@@ -78,7 +87,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	securityContext := ReadOnlyRootFilesystem(json)
+	securityContext, err := ReadOnlyRootFilesystem(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if securityContext != 0 {
 		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}
@@ -114,7 +127,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	securityContext := ReadOnlyRootFilesystem(json)
+	securityContext, err := ReadOnlyRootFilesystem(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if securityContext != 0 {
 		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}

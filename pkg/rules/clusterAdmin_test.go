@@ -29,7 +29,11 @@ roleRef:
 		t.Fatal(err.Error())
 	}
 
-	rbac := ClusterAdmin(json)
+	rbac, err := ClusterAdmin(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 1 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
@@ -58,7 +62,11 @@ roleRef:
 		t.Fatal(err.Error())
 	}
 
-	rbac := ClusterAdmin(json)
+	rbac, err := ClusterAdmin(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 0 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 0)
 	}

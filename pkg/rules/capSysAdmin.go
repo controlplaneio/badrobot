@@ -9,7 +9,7 @@ import (
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
-func CapSysAdmin(json []byte) int {
+func CapSysAdmin(json []byte) (int, error) {
 	sc := 0
 	spec := getSpecSelector(json)
 
@@ -28,5 +28,5 @@ func CapSysAdmin(json []byte) int {
 		sc++
 	}
 
-	return sc
+	return sc, nil
 }

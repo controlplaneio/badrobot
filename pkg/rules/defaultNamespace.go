@@ -9,7 +9,7 @@ import (
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
-func DefaultNamespace(json []byte) int {
+func DefaultNamespace(json []byte) (int, error) {
 	namespace := 0
 
 	jqNS := gojsonq.New().Reader(bytes.NewReader(json)).
@@ -28,5 +28,5 @@ func DefaultNamespace(json []byte) int {
 		namespace++
 	}
 
-	return namespace
+	return namespace, nil
 }
