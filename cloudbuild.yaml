@@ -20,3 +20,5 @@ steps:
           docker push europe-west2-docker.pkg.dev/$PROJECT_ID/badrobot/badrobot-cli:${SHORT_SHA}
           docker push europe-west2-docker.pkg.dev/$PROJECT_ID/badrobot/badrobot-cli:latest
         fi
+options:
+  logging: CLOUD_LOGGING_ONLY
