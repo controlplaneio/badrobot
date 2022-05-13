@@ -60,7 +60,7 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 		Selector:  ".spec .template .spec .securityContext .containers[] ",
 		Reason:    "Operators should be deployed with securityContextApplied",
 		Kinds:     []string{"Pod", "Deployment", "StatefulSet", "DaemonSet"},
-		Points:    -16,
+		Points:    -12,
 	}
 	list = append(list, noSecurityContextRule)
 
