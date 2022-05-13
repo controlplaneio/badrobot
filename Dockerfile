@@ -1,10 +1,12 @@
-FROM golang:1.18.1 AS builder
+FROM golang:1.18.2 AS builder
 
 WORKDIR /badrobot
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o badrobot .
+RUN apt-get update && apt-get install -y jq && \
+  make test && \
+  CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o badrobot .
 
 # ===
 
@@ -17,12 +19,9 @@ RUN addgroup -S badrobot \
 WORKDIR /home/badrobot
 
 COPY --from=builder /badrobot/badrobot /bin/badrobot
-COPY --from=stefanprodan/kubernetes-json-schema:latest /schemas/master-standalone /schemas/master-standalone-strict
 COPY ./templates/ /templates
 
-RUN chown -R badrobot:badrobot ./ /schemas
 
 USER badrobot
 
-ENTRYPOINT ["badrobot"]
-CMD ["http", "8080"]
+ENTRYPOINT ["/bin/badrobot"]
