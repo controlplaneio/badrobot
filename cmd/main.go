@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -21,7 +20,7 @@ Validate Kubernetes Operator resources for security risks`,
 }
 
 // Execute runs badrobot
-func Execute() {
+func Execute() int {
 	var err error
 
 	// logger writes to stderr
@@ -34,19 +33,31 @@ func Execute() {
 
 	rootCmd.SetArgs(os.Args[1:])
 	if err := rootCmd.Execute(); err != nil {
-		e := err.Error()
+		switch err.(type) {
+		case *ScanFailedValidationError:
+			e, _ := err.(*ScanFailedValidationError)
+			return e.ExitCode
+		default:
+			e := err.Error()
 
-		fmt.Println(strings.ToUpper(e[:1]) + e[1:])
-		os.Exit(1)
+			if rootCmd.SilenceUsage && rootCmd.SilenceErrors {
+				logger.Error(strings.ToUpper(e[:1]) + e[1:])
+			}
+			return 1
+		}
 	}
+
+	return 0
 }
 
 // NewLogger creates a logger
 func NewLogger(logLevel string, zapEncoding string) (*zap.SugaredLogger, error) {
+	devMode := false
 	level := zap.NewAtomicLevelAt(zapcore.InfoLevel)
 	switch logLevel {
 	case "debug":
 		level = zap.NewAtomicLevelAt(zapcore.DebugLevel)
+		devMode = true
 	case "info":
 		level = zap.NewAtomicLevelAt(zapcore.InfoLevel)
 	case "warn":
@@ -74,8 +85,9 @@ func NewLogger(logLevel string, zapEncoding string) (*zap.SugaredLogger, error) 
 	}
 
 	zapConfig := zap.Config{
-		Level:       level,
-		Development: false,
+		Level:             level,
+		Development:       devMode,
+		DisableStacktrace: !devMode,
 		Sampling: &zap.SamplingConfig{
 			Initial:    100,
 			Thereafter: 100,

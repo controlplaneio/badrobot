@@ -1,9 +1,11 @@
 package main
 
 import (
+	"os"
+
 	"github.com/controlplaneio/badrobot/cmd"
 )
 
 func main() {
-	cmd.Execute()
+	os.Exit(cmd.Execute())
 }

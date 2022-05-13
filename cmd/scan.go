@@ -4,17 +4,16 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/controlplaneio/badrobot/pkg/report"
 	"github.com/controlplaneio/badrobot/pkg/ruler"
 	"github.com/spf13/cobra"
-	"go.uber.org/zap"
 )
 
 type ScanFailedValidationError struct {
+	ExitCode int
 }
 
 func (e *ScanFailedValidationError) Error() string {
@@ -90,11 +89,11 @@ var scanCmd = &cobra.Command{
 		}
 
 		if debug {
-			z, err := zap.NewDevelopment()
+			z, err := NewLogger("debug", "console")
 			if err != nil {
-				log.Fatalf("can't initialize zap logger: %v", err)
+				return fmt.Errorf("can't initialize zap logger: %v", err)
 			}
-			logger = z.Sugar()
+			logger = z
 		}
 
 		rootCmd.SilenceErrors = true
@@ -131,7 +130,7 @@ var scanCmd = &cobra.Command{
 		if outputLocation != "" {
 			err = ioutil.WriteFile(outputLocation, buff.Bytes(), 0644)
 			if err != nil {
-				logger.Debugf("Couldn't write output to %s", outputLocation)
+				return fmt.Errorf("writing output to %s, error: %s", outputLocation, err)
 			}
 		}
 
@@ -142,7 +141,6 @@ var scanCmd = &cobra.Command{
 			return nil
 		}
 
-		os.Exit(exitCode)
-		return &ScanFailedValidationError{}
+		return &ScanFailedValidationError{ExitCode: exitCode}
 	},
 }
