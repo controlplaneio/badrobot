@@ -20,7 +20,6 @@ RUN addgroup -S badrobot \
 WORKDIR /home/badrobot
 
 COPY --from=builder /badrobot/badrobot /bin/badrobot
-COPY ./templates/ /templates
 
 
 USER badrobot

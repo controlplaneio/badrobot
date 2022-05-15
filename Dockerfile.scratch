@@ -15,8 +15,6 @@ COPY --from=stefanprodan/kubernetes-json-schema:latest /schemas/master-standalon
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /passwd /group /etc/
 COPY --from=builder /badrobot/badrobot /badrobot
-COPY ./templates/ /templates
 USER badrobot
 
 ENTRYPOINT ["/badrobot"]
-CMD ["http", "8080"]
