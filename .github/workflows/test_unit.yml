@@ -1,0 +1,34 @@
+---
+name: Testing - Unit
+# Split until path filtering for jobs added
+# https://github.community/t/path-filtering-for-jobs-and-steps/16447
+on:
+  push:
+    branches: [master]
+    paths:
+      - "**.go"
+      - "go.mod"
+      - "go.sum"
+  pull_request:
+    branches: [master]
+    paths:
+      - "**.go"
+      - "go.mod"
+      - "go.sum"
+
+jobs:
+  unit:
+    name: Go Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ^1.18
+
+      - name: Run go unit tests
+        run: |
+          make test-unit
