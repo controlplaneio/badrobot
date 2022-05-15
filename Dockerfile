@@ -1,17 +1,18 @@
-FROM golang:1.18.2 AS builder
+FROM golang:1.18-alpine AS builder
+ARG VERSION=unknown
+ARG COMMIT=unknown
 
 WORKDIR /badrobot
 
-RUN apt-get update && apt-get install -y jq
-
 COPY . .
 
-RUN make test && \
-  CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o badrobot .
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -ldflags="-s -w -X github.com/controlplaneio/badrobot/cmd.version=$VERSION -X github.com/controlplaneio/badrobot/cmd.commit=$COMMIT" \
+    -o badrobot .
 
 # ===
 
-FROM alpine:3.15.4
+FROM alpine:3.15
 
 RUN addgroup -S badrobot \
     && adduser -S -g badrobot badrobot \
@@ -20,7 +21,6 @@ RUN addgroup -S badrobot \
 WORKDIR /home/badrobot
 
 COPY --from=builder /badrobot/badrobot /bin/badrobot
-
 
 USER badrobot
 

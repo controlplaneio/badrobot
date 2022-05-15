@@ -55,6 +55,10 @@ export NAME CONTAINER_REGISTRY_URL BUILD_DATE GIT_MESSAGE GIT_SHA GIT_TAG \
   CONTAINER_TAG CONTAINER_NAME CONTAINER_NAME_LATEST CONTAINER_NAME_TESTING
 ### github.com/controlplaneio/ensure-content.git makefile-header END ###
 
+LDFLAGS=-s -w \
+        -X github.com/controlplaneio/badrobot/cmd.version=$(GIT_TAG)\
+        -X github.com/controlplaneio/badrobot/cmd.commit=$(GIT_SHA)
+
 PACKAGE = none
 BATS_PARALLEL_JOBS := $(shell command -v parallel 2>/dev/null && echo '--jobs 20')
 
@@ -107,7 +111,7 @@ test-unit-verbose: ## golang unit tests (verbose)
 .PHONY: build
 build: ## golang build
 	@echo "+ $@"
-	go build -a -o ./dist/badrobot .
+	go build -ldflags "$(LDFLAGS)" -o ./dist/badrobot .
 
 .PHONY: prune
 prune: ## golang dependency prune

@@ -14,9 +14,9 @@ steps:
       - '-c'
       - |
         set -euxo pipefail
-        docker build -t europe-west2-docker.pkg.dev/$PROJECT_ID/badrobot/badrobot-cli:${SHORT_SHA} .
+        docker build -t europe-west2-docker.pkg.dev/$PROJECT_ID/badrobot/badrobot-cli:${SHORT_SHA} --build-arg VERSION=${TAG_NAME} --build-arg COMMIT=${SHORT_SHA} .
         if [[ "${BRANCH_NAME}" == "master" ]]; then
-          docker tag europe-west2-docker.pkg.dev/$PROJECT_ID/badrobot/badrobot-cli:${SHORT_SHA} europe-west2-docker.pkg.dev/$PROJECT_ID/badrobot/badrobot-cli:latest
+          docker tag europe-west2-docker.pkg.dev/$PROJECT_ID/badrobot/badrobot-cli:{${SHORT_SHA},latest}
           docker push europe-west2-docker.pkg.dev/$PROJECT_ID/badrobot/badrobot-cli:${SHORT_SHA}
           docker push europe-west2-docker.pkg.dev/$PROJECT_ID/badrobot/badrobot-cli:latest
         fi
