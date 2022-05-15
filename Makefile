@@ -70,20 +70,12 @@ all: help
 .PHONY: all
 lint:
 	@echo "+ $@"
-	-make lint-markdown
 	make lint-go-fmt
 
 .PHONY: lint-go-fmt
 lint-go-fmt: ## golang fmt check
 	@echo "+ $@"
 	gofmt -l -s ./pkg | grep ".*\.go"; if [ "$$?" = "0" ]; then exit 1; fi
-
-MARKDOWN_IMAGE ?= registry.gitlab.com/06kellyjac/docker_markdownlint-cli
-MARKDOWN_IMAGE_TAG ?= 0.19.0
-.PHONY: lint-markdown
-lint-markdown:
-	@echo "+ $@"
-	docker run -v ${PWD}:/markdown ${MARKDOWN_IMAGE}:${MARKDOWN_IMAGE_TAG} '**/*.md' --ignore 'test/bin/'
 
 # ---
 .PHONY: test
