@@ -3,7 +3,7 @@
 - [About](#about)
   - [Prerequisites](#prerequisites)
 - [Install](#install)
-  - [Go](#go-116)
+  - [Go](#go-117)
 - [Command line Usage](#command-line-usage)
   - [Usage Example](#usage-example)
   - [Docker Usage](#docker-usage)
@@ -20,7 +20,7 @@ BadRobot requires the Operator manifests to be bundled into a single file, rathe
 ## Install
 BadRobot can be run as a container or as a local go binary
 
-### Go 1.16+
+### Go 1.17+
 
 ```bash
 $ go install github.com/controlplaneio/badrobot/
