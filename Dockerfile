@@ -2,10 +2,11 @@ FROM golang:1.18.2 AS builder
 
 WORKDIR /badrobot
 
+RUN apt-get update && apt-get install -y jq
+
 COPY . .
 
-RUN apt-get update && apt-get install -y jq && \
-  make test && \
+RUN make test && \
   CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o badrobot .
 
 # ===
