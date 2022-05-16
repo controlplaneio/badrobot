@@ -6,6 +6,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	// vars injected with ldflags at build time (this can be done automatically by goreleaser)
+	version = "unknown"
+	commit  = "unknown"
+)
+
 func init() {
 	rootCmd.AddCommand(versionCmd)
 }
@@ -13,8 +19,7 @@ func init() {
 var versionCmd = &cobra.Command{
 	Use:   `version`,
 	Short: "Prints badrobot version",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Printf("version %s\ngit commit %s\nbuild date %s\n", version, commit, date)
-		return nil
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("version %s\ngit commit %s\n", version, commit)
 	},
 }

@@ -11,14 +11,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var (
-	logger *zap.SugaredLogger
-
-	// vars injected by goreleaser at build time
-	version = "unknown"
-	commit  = "unknown"
-	date    = "unknown"
-)
+var logger *zap.SugaredLogger
 
 var rootCmd = &cobra.Command{
 	Use:   "badrobot",

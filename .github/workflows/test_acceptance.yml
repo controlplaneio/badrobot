@@ -1,0 +1,42 @@
+---
+name: Testing - Acceptance
+# Split until path filtering for jobs added
+# https://github.community/t/path-filtering-for-jobs-and-steps/16447
+on:
+  push:
+    branches: [master]
+    paths:
+      - "**.go"
+      - "go.mod"
+      - "go.sum"
+      - "**.bash"
+      - "**.bats"
+  pull_request:
+    branches: [master]
+    paths:
+      - "**.go"
+      - "go.mod"
+      - "go.sum"
+      - "**.bash"
+      - "**.bats"
+
+jobs:
+  acceptance:
+    name: Bats acceptance tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          # needed for bats tests
+          submodules: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        id: go
+        with:
+          go-version: ^1.18
+
+      - name: Run bats acceptance tests
+        run: |
+          make build test-acceptance

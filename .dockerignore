@@ -2,6 +2,7 @@ Dockerfile*
 Jenkinsfile*
 **/.terraform
 .git/
+dist
 
 .idea/
 *.iml

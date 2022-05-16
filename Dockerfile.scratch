@@ -1,22 +1,21 @@
-FROM golang:1.18.1-alpine AS builder
+FROM golang:1.18-alpine AS builder
 
 RUN echo "badrobot:x:25000:25000:badrobot:/home/badrobot:/sbin/nologin" > /passwd && \
     echo "badrobot:x:25000:" > /group
 WORKDIR /badrobot
-RUN apk add --no-cache git ca-certificates
+RUN apk add --no-cache ca-certificates
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o badrobot .
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -ldflags="-s -w -X github.com/controlplaneio/badrobot/cmd.version=$VERSION -X github.com/controlplaneio/badrobot/cmd.commit=$COMMIT" \
+    -o badrobot .
 
 # ===
 
 FROM scratch
 WORKDIR /home/badrobot
-COPY --from=stefanprodan/kubernetes-json-schema:latest /schemas/master-standalone /schemas/master-standalone-strict
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /passwd /group /etc/
-COPY --from=builder /badrobot/badrobot /badrobot
-COPY ./templates/ /templates
+COPY --from=builder /badrobot/badrobot /bin/badrobot
 USER badrobot
 
-ENTRYPOINT ["/badrobot"]
-CMD ["http", "8080"]
+ENTRYPOINT ["/bin/badrobot"]

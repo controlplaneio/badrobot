@@ -55,6 +55,10 @@ export NAME CONTAINER_REGISTRY_URL BUILD_DATE GIT_MESSAGE GIT_SHA GIT_TAG \
   CONTAINER_TAG CONTAINER_NAME CONTAINER_NAME_LATEST CONTAINER_NAME_TESTING
 ### github.com/controlplaneio/ensure-content.git makefile-header END ###
 
+LDFLAGS=-s -w \
+        -X github.com/controlplaneio/badrobot/cmd.version=$(GIT_TAG)\
+        -X github.com/controlplaneio/badrobot/cmd.commit=$(GIT_SHA)
+
 PACKAGE = none
 BATS_PARALLEL_JOBS := $(shell command -v parallel 2>/dev/null && echo '--jobs 20')
 
@@ -66,20 +70,12 @@ all: help
 .PHONY: all
 lint:
 	@echo "+ $@"
-	-make lint-markdown
 	make lint-go-fmt
 
 .PHONY: lint-go-fmt
 lint-go-fmt: ## golang fmt check
 	@echo "+ $@"
 	gofmt -l -s ./pkg | grep ".*\.go"; if [ "$$?" = "0" ]; then exit 1; fi
-
-MARKDOWN_IMAGE ?= registry.gitlab.com/06kellyjac/docker_markdownlint-cli
-MARKDOWN_IMAGE_TAG ?= 0.19.0
-.PHONY: lint-markdown
-lint-markdown:
-	@echo "+ $@"
-	docker run -v ${PWD}:/markdown ${MARKDOWN_IMAGE}:${MARKDOWN_IMAGE_TAG} '**/*.md' --ignore 'test/bin/'
 
 # ---
 .PHONY: test
@@ -107,7 +103,7 @@ test-unit-verbose: ## golang unit tests (verbose)
 .PHONY: build
 build: ## golang build
 	@echo "+ $@"
-	go build -a -o ./dist/badrobot .
+	go build -ldflags "$(LDFLAGS)" -o ./dist/badrobot .
 
 .PHONY: prune
 prune: ## golang dependency prune
