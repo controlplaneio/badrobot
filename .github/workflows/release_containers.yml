@@ -74,5 +74,5 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
           build-args: |
-            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-            COMMIT=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+            VERSION=v${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.version'] }}
+            COMMIT=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.revision'] }}
