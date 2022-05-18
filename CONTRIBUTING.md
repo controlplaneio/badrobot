@@ -47,13 +47,8 @@ We also have an issue template for questions [here](https://github.com/controlpl
 
 ## What Should I Know Before I Get Started?
 
-**If you want to run the acceptance tests** make sure to clone with `-recurse-submodules` or if you've already cloned the
-repo you can fetch the submodules with:
-
-```sh
-git submodule init
-git submodule update
-```
+The acceptance tests require some dependencies fetched via submodules. You can either clone the repo with `--recurse-submodules`
+or when running `make test`/`make test-acceptance` it will automatically fetch them if they're missing.
 
 ## How Can I Contribute?
 

@@ -83,8 +83,14 @@ test: ## unit and local acceptance tests
 	@echo "+ $@"
 	make test-unit build test-acceptance
 
+test/bin/%:
+	git submodule update --init -- $@
+
+.PHONY: bats
+bats: test/bin/bats test/bin/bats-assert test/bin/bats-support ## fetch bats dependencies
+
 .PHONY: test-acceptance
-test-acceptance: ## acceptance tests
+test-acceptance: bats build ## acceptance tests
 	@echo "+ $@"
 	bash -xc 'cd test && ./bin/bats/bin/bats $(BATS_PARALLEL_JOBS) .'
 
