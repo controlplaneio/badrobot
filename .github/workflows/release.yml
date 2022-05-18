@@ -1,0 +1,28 @@
+---
+name: Release
+on:
+  # https://github.com/actions/runner/issues/1007
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  release:
+    name: Release on GitHub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        id: go
+        with:
+          go-version: ^1.18
+
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Launch goreleaser
+        uses: goreleaser/goreleaser-action@v2.9.1
+        with:
+          args: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,27 @@
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - main: "."
+    binary: badrobot
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: darwin
+        goarch: arm
+    env:
+      - CGO_ENABLED=0
+
+checksum:
+  name_template: "{{ .ProjectName }}_checksums.txt"
+
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
