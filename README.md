@@ -12,7 +12,7 @@
 
 ---
 ## About
-Badrobot is a Kubernetes Operator audit tool. It statically analyses manifests for high risk configurations such as lack of security restrictions on the deployed controller and the permissions of an associated clusterole. The risk analysis is primarily focussed on the likelihood that a compromised Operator would be able to obtain full cluster permissions.
+Badrobot is a Kubernetes Operator security audit tool. It statically analyses manifests for high risk configurations such as lack of security restrictions on the deployed controller and the permissions of an associated clusterole. The risk analysis is primarily focussed on the likelihood that a compromised Operator would be able to obtain full cluster permissions.
 
 ### Prerequisites
 BadRobot requires the Operator manifests to be bundled into a single file, rather than scanning an entire directory structure and analysing individual manifests.
