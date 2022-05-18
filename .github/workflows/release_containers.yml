@@ -64,7 +64,7 @@ jobs:
         uses: docker/setup-buildx-action@v1.6.0
 
       - name: Build container and push tags
-        uses: docker/build-push-action@v2.9.0
+        uses: docker/build-push-action@v3
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
@@ -73,3 +73,6 @@ jobs:
           cache-to: mode=max,type=local,dest=/tmp/.buildx-cache
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
+          build-args: |
+            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+            COMMIT=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
