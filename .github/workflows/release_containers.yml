@@ -60,13 +60,17 @@ jobs:
       #     username: ${{ github.repository_owner }}
       #     password: ${{ secrets.CR_PAT }}
 
-      - name: Set up Docker Buildx
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Build container and push tags
         uses: docker/build-push-action@v3
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           file: ${{ matrix.containers.file }}
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -74,5 +78,5 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
           build-args: |
-            VERSION=v${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.version'] }}
+            VERSION=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.version'] }}
             COMMIT=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.revision'] }}
