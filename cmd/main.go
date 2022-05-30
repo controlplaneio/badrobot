@@ -33,10 +33,9 @@ func Execute() int {
 
 	rootCmd.SetArgs(os.Args[1:])
 	if err := rootCmd.Execute(); err != nil {
-		switch err.(type) {
+		switch err := err.(type) {
 		case *ScanFailedValidationError:
-			e, _ := err.(*ScanFailedValidationError)
-			return e.ExitCode
+			return err.ExitCode
 		default:
 			e := err.Error()
 

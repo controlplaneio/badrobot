@@ -23,6 +23,10 @@ metadata:
 	}
 
 	namespace, err := DefaultNamespace(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if namespace != 0 {
 		t.Errorf("Got %v namespace wanted %v", namespace, 0)
 	}
