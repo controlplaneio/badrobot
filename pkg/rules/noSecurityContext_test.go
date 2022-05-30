@@ -1,8 +1,9 @@
 package rules
 
 import (
-	"github.com/ghodss/yaml"
 	"testing"
+
+	"github.com/ghodss/yaml"
 )
 
 func Test_ContainersSecurityContext(t *testing.T) {
@@ -24,7 +25,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	securityContext := NoSecurityContext(json)
+	securityContext, err := NoSecurityContext(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if securityContext != 0 {
 		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}
@@ -47,7 +52,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	securityContext := NoSecurityContext(json)
+	securityContext, err := NoSecurityContext(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if securityContext != 1 {
 		t.Errorf("Got %v securityContext wanted %v", securityContext, 1)
 	}
@@ -70,7 +79,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	securityContext := NoSecurityContext(json)
+	securityContext, err := NoSecurityContext(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if securityContext != 0 {
 		t.Errorf("Got %v securityContext wanted %v", securityContext, 0)
 	}
@@ -91,7 +104,11 @@ spec:
 		t.Fatal(err.Error())
 	}
 
-	securityContext := NoSecurityContext(json)
+	securityContext, err := NoSecurityContext(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if securityContext != 1 {
 		t.Errorf("Got %v securityContext wanted %v", securityContext, 1)
 	}
