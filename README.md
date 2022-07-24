@@ -23,7 +23,7 @@ BadRobot can be run as a container or as a local go binary
 ### Go 1.17+
 
 ```bash
-$ go install github.com/controlplaneio/badrobot/
+$ go install github.com/controlplaneio/badrobot@latest
 ```
 ## Command Line Usage
 ```bash
