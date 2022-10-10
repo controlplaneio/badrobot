@@ -71,7 +71,7 @@ $ badrobot scan operator.yaml
 Run the same command in Docker:
 
 ```bash
-$ docker run -i controlplaneio/badrobot scan /dev/stdin < operator.yaml
+$ docker run -i controlplane/badrobot scan /dev/stdin < operator.yaml
 ```
 
 ## Rulesets
