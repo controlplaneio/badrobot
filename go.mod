@@ -7,7 +7,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/thedevsaddam/gojsonq/v2 v2.5.2
 	go.uber.org/zap v1.23.0
-	k8s.io/api v0.25.3
+	k8s.io/api v0.25.4
 )
 
 require (
@@ -26,7 +26,7 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	k8s.io/apimachinery v0.25.3 // indirect
+	k8s.io/apimachinery v0.25.4 // indirect
 	k8s.io/klog/v2 v2.80.1 // indirect
 	k8s.io/utils v0.0.0-20221012122500-cfd413dd9e85 // indirect
 	sigs.k8s.io/json v0.0.0-20220713155537-f223a00ba0e2 // indirect
