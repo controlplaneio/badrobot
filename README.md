@@ -1,24 +1,26 @@
-# BadRobot
+![BadRobot Logo](/doc/images/badrobot_logo_stack.png)
 
-- [About](#about)
-  - [Prerequisites](#prerequisites)
+[![Go Report Card](https://goreportcard.com/badge/github.com/controlplaneio/badrobot)](https://goreportcard.com/report/github.com/controlplaneio/badrobot)
+
+BadRobot is a tool to perform security auditing of Kubernetes Operators. Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Operators follow Kubernetes principles, notably the control loop. These extensions usually run within the Kubernetescluster, but it could just as well interact with the cluster from the outside with appropriate authentication.
+
+BadRobot statically analyses Operator manifest files for high risk configurations such as lack of security restrictions on the deployed controller and the permissions of an associated RBAC ClusteRole. The risk analysis that BadRobot evaluates is primarily focussed on the likelihood that a compromised Operator would be able to carry privilege escalation and obtain full control over every resource in the and in all namespaces.
+
+- [Prerequisites](#prerequisites)
 - [Install](#install)
   - [Go](#go-117)
 - [Command line Usage](#command-line-usage)
   - [Usage Example](#usage-example)
   - [Docker Usage](#docker-usage)
-- [Rulesets](#rulesets)
+- [Rulesets](#badrobot-rulesets)
 - [Roadmap](#roadmap)
 
----
-## About
-Badrobot is a Kubernetes Operator audit tool. It statically analyses manifests for high risk configurations such as lack of security restrictions on the deployed controller and the permissions of an associated clusterole. The risk analysis is primarily focussed on the likelihood that a compromised Operator would be able to obtain full cluster permissions.
 
-### Prerequisites
+## Prerequisites
 BadRobot requires the Operator manifests to be bundled into a single file, rather than scanning an entire directory structure and analysing individual manifests.
 
 ## Install
-BadRobot can be run as a container or as a local go binary
+BadRobot can be run either as a container or as a local go binary. 
 
 ### Go 1.17+
 
@@ -74,7 +76,7 @@ Run the same command in Docker:
 $ docker run -i controlplane/badrobot scan /dev/stdin < operator.yaml
 ```
 
-## Rulesets
+## BadRobot Rulesets
 
 | RuleSet ID | Rule | Risk | Risk Level |
 |-----|-----|-----|-----|
@@ -107,8 +109,8 @@ $ docker run -i controlplane/badrobot scan /dev/stdin < operator.yaml
 
 ---
 ## Roadmap
-In the future, BadRobot could be extended to consider the following manifests:
+There are plans to extend BadRobot in the future to consider the following manifests:
 
-1. kind: Role - The analysis of roles can be included to detemine whether they are bound to a dedicated namespace, whether they only have access to specific custom resources, etc.
+1. kind: Role - The analysis of roles can be included to determine whether they are bound to a dedicated namespace, whether they only have access to specific custom resources, etc.
 2. kind: Namespace (Pod Security Standards) - The analysis could determine whether Pod Security Standards are applied for Kubernetes Clusters v1.23 and above.
 3. kind: NetworkPolicy - Analyse whether network policies are being applied to the Operator
