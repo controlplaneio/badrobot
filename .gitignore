@@ -112,3 +112,4 @@ docs/_build
 ./badrobot
 
 conf/.config/keybase/
+.DS_Store
