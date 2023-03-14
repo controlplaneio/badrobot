@@ -1,6 +1,7 @@
 ![BadRobot Logo](/doc/images/badrobot_logo_stack.png)
-
+[![Security Analysis](https://github.com/controlplaneio/badrobot/actions/workflows/security_analysis.yml/badge.svg)](https://github.com/controlplaneio/badrobot/actions/workflows/security_analysis.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/controlplaneio/badrobot)](https://goreportcard.com/report/github.com/controlplaneio/badrobot)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/controlplaneio/badrobot)
 
 BadRobot is a tool to perform security auditing of Kubernetes Operators. Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Operators follow Kubernetes principles, notably the control loop. These extensions usually run within the Kubernetescluster, but it could just as well interact with the cluster from the outside with appropriate authentication.
 
