@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/ghodss/yaml v1.0.0
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.7.0
 	github.com/thedevsaddam/gojsonq/v2 v2.5.2
 	go.uber.org/zap v1.24.0
 	k8s.io/api v0.26.3
