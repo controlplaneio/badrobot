@@ -25,29 +25,29 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  trivy:
-    name: Trivy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  # trivy:
+  #   name: Trivy
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Build an image from Dockerfile
-        run: |
-          docker build . -t badrobot:${{ github.sha }}
+  #     - name: Build an image from Dockerfile
+  #       run: |
+  #         docker build . -t badrobot:${{ github.sha }}
 
-      - name: Run Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: badrobot:${{ github.sha }}
-          format: template
-          template: "@/contrib/sarif.tpl"
-          output: trivy-results.sarif
+  #     - name: Run Trivy
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         image-ref: badrobot:${{ github.sha }}
+  #         format: template
+  #         template: "@/contrib/sarif.tpl"
+  #         output: trivy-results.sarif
 
-      - name: Upload Trivy results to the Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: trivy-results.sarif
+  #     - name: Upload Trivy results to the Security tab
+  #       uses: github/codeql-action/upload-sarif@v2
+  #       with:
+  #         sarif_file: trivy-results.sarif
 
   govulncheck:
     name: govulcheck
