@@ -16,9 +16,9 @@ jobs:
           - name: badrobot
             file: ./Dockerfile
             suffix: ""
-          - name: badrobot scratch
-            file: ./Dockerfile.scratch
-            suffix: -scratch
+          - name: badrobot alpine
+            file: ./Dockerfile.alpine
+            suffix: -alpine
 
     steps:
       - name: Cache container layers
