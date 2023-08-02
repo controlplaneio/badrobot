@@ -25,26 +25,15 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  trivy:
-    name: Trivy
+  govulncheck:
+    name: govulncheck
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Build an image from Dockerfile
-        run: |
-          docker build . -t badrobot:${{ github.sha }}
-
-      - name: Run Trivy
-        uses: aquasecurity/trivy-action@master
+      - name: Vulnerability Scan Go Code
+        uses: Templum/govulncheck-action@v1.0.0
         with:
-          image-ref: badrobot:${{ github.sha }}
-          format: template
-          template: "@/contrib/sarif.tpl"
-          output: trivy-results.sarif
-
-      - name: Upload Trivy results to the Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: trivy-results.sarif
+           go-version: 1.20.6
+           vulncheck-version: v1.0.0
