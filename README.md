@@ -1,4 +1,4 @@
-![BadRobot Logo](/doc/images/badrobot_logo_stack.png)
+![BadRobot Logo](/doc/images/badrobot_logo.png)
 [![Security Analysis](https://github.com/controlplaneio/badrobot/actions/workflows/security_analysis.yml/badge.svg)](https://github.com/controlplaneio/badrobot/actions/workflows/security_analysis.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/controlplaneio/badrobot)](https://goreportcard.com/report/github.com/controlplaneio/badrobot)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/controlplaneio/badrobot)
