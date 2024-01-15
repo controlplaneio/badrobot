@@ -1,4 +1,4 @@
-FROM golang:1.21.5-alpine AS builder
+FROM golang:1.21.6-alpine AS builder
 
 RUN echo "badrobot:x:25000:25000:badrobot:/home/badrobot:/sbin/nologin" > /passwd && \
     echo "badrobot:x:25000:" > /group
