@@ -9,7 +9,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/thedevsaddam/gojsonq/v2 v2.5.2
 	go.uber.org/zap v1.27.0
-	k8s.io/api v0.30.3
+	k8s.io/api v0.31.0
 )
 
 require (
