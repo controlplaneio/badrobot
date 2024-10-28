@@ -7,13 +7,13 @@ import (
 	rbacv1 "k8s.io/api/rbac/v1"
 )
 
-func NodeProxyClusterRole(input []byte) int {
+func NodeProxyClusterRole(input []byte) (int, error) {
 	rbac := 0
 
 	clusterRole := &rbacv1.ClusterRole{}
 	err := json.Unmarshal(input, clusterRole)
 	if err != nil {
-		return 0
+		return -1, err
 	}
 
 	for _, rule := range clusterRole.Rules {
@@ -28,5 +28,5 @@ func NodeProxyClusterRole(input []byte) int {
 		}
 	}
 
-	return rbac
+	return rbac, nil
 }

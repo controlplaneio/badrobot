@@ -7,7 +7,7 @@ import (
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
-func NoSecurityContext(json []byte) int {
+func NoSecurityContext(json []byte) (int, error) {
 	spec := getSpecSelector(json)
 	sc := 0
 
@@ -22,5 +22,5 @@ func NoSecurityContext(json []byte) int {
 		sc++
 	}
 
-	return sc
+	return sc, nil
 }

@@ -27,7 +27,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := SecretsClusterRole(json)
+	rbac, err := SecretsClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 1 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
@@ -54,7 +58,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := SecretsClusterRole(json)
+	rbac, err := SecretsClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 0 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 0)
 	}
@@ -87,7 +95,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := SecretsClusterRole(json)
+	rbac, err := SecretsClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 1 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
@@ -119,7 +131,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := SecretsClusterRole(json)
+	rbac, err := SecretsClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 1 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
@@ -147,7 +163,11 @@ rules:
 		t.Fatal(err.Error())
 	}
 
-	rbac := SecretsClusterRole(json)
+	rbac, err := SecretsClusterRole(json)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	if rbac != 1 {
 		t.Errorf("Got %v permissions wanted %v", rbac, 1)
 	}
