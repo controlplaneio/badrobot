@@ -35,5 +35,5 @@ jobs:
       - name: Vulnerability Scan Go Code
         uses: Templum/govulncheck-action@v1.0.1
         with:
-           go-version: 1.21
-           vulncheck-version: v1.0.0
+           go-version: 1.22
+           vulncheck-version: v1.0.1
