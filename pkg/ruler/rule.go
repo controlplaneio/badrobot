@@ -3,6 +3,7 @@ package ruler
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/thedevsaddam/gojsonq/v2"
 )
 
@@ -24,7 +25,7 @@ type Rule struct {
 	Points    int
 	Weight    int
 	Advise    int
-	Predicate func([]byte) int
+	Predicate func([]byte) (int, error)
 }
 
 // Eval executes the predicate if the kind matches the rule
@@ -45,8 +46,7 @@ func (r *Rule) Eval(json []byte) (int, error) {
 	}
 
 	if match {
-		count := r.Predicate(json)
-		return count, nil
+		return r.Predicate(json)
 	} else {
 		return 0, &NotSupportedError{Kind: kind}
 	}
