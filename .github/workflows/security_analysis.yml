@@ -56,6 +56,14 @@ jobs:
           output-format: sarif
           output-file: govulncheck.sarif
 
+      - name: Fix govulncheck SARIF output
+        # https://github.com/docker/buildx/blob/d4eca07af8385dca95b4c38535a9bbaa3bfc0fa9/hack/dockerfiles/govulncheck.Dockerfile#L22-L25
+        # Make sure "results" field is defined in SARIF output otherwise GitHub Code Scanning
+        # will fail when uploading report with "Invalid SARIF. Missing 'results' array in run."
+        # Relates to https://github.com/golang/vuln/blob/ffdef74cc44d7eb71931d8d414c478b966812488/internal/sarif/sarif.go#L69
+        run: |
+          cat <<< $(jq '(.runs[] | select(.results == null) | .results) |= []' govulncheck.sarif) > govulncheck.sarif
+
       - name: Upload Scan SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:
