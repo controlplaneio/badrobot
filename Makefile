@@ -83,14 +83,18 @@ test: ## unit and local acceptance tests
 	@echo "+ $@"
 	make test-unit build test-acceptance
 
-test/bin/%:
-	git submodule update --init -- $@
+.PHONY: check-and-reinit-submodules
+check-and-reinit-submodules:
+	@if git submodule status | grep "^[-+]" ; then \
+		git submodule update --init; \
+	fi
 
-.PHONY: bats
-bats: test/bin/bats test/bin/bats-assert test/bin/bats-support ## fetch bats dependencies
+.PHONY: uninit-submodules
+uninit-submodules:
+	git submodule deinit -f .
 
 .PHONY: test-acceptance
-test-acceptance: bats build ## acceptance tests
+test-acceptance: check-and-reinit-submodules build ## acceptance tests
 	@echo "+ $@"
 	bash -xc 'cd test && ./bin/bats/bin/bats $(BATS_PARALLEL_JOBS) .'
 
