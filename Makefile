@@ -60,7 +60,7 @@ LDFLAGS=-s -w \
         -X github.com/controlplaneio/badrobot/cmd.commit=$(GIT_SHA)
 
 PACKAGE = none
-BATS_PARALLEL_JOBS := $(shell command -v parallel 2>/dev/null && echo '--jobs 20')
+BATS_PARALLEL_JOBS := $(shell command -v parallel 2>&1 >/dev/null && echo '--jobs 20')
 
 .PHONY: all
 all: help
