@@ -4,15 +4,27 @@ name: Security Analysis
 on:
   push:
     branches: [master]
+    paths:
+      - "**.go"
+      - "go.mod"
+      - "go.sum"
   pull_request:
     branches: [master]
+    paths:
+      - "**.go"
+      - "go.mod"
+      - "go.sum"
   schedule:
-    - cron: "0 6 * * *"
+    # 06:12 - offset from the hour to avoid other build jobs
+    - cron: "12 6 * * *"
 
 jobs:
   codeql:
     name: CodeQL
     runs-on: ubuntu-latest
+    permissions:
+      # allow uploading sarif results
+      security-events: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,18 +34,30 @@ jobs:
         with:
           languages: go
 
+      # analyzes + uploads sarif
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 
   govulncheck:
     name: govulncheck
     runs-on: ubuntu-latest
+    permissions:
+      # allow uploading sarif results
+      security-events: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Vulnerability Scan Go Code
-        uses: Templum/govulncheck-action@v1.0.1
+        uses: golang/govulncheck-action@v1
         with:
-           go-version: 1.22
-           vulncheck-version: v1.0.1
+          go-version-file: go.mod
+          repo-checkout: false
+          output-format: sarif
+          output-file: govulncheck.sarif
+
+      - name: Upload Scan SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: govulncheck.sarif
+          category: govulncheck
