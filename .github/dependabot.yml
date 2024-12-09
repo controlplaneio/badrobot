@@ -5,30 +5,45 @@ updates:
     directory: /
     schedule:
       interval: weekly
-      time: "06:00"
-      timezone: UTC
+      # offset from the hour to avoid other build jobs
+      time: "06:34"
+      timezone: Etc/UTC
     open-pull-requests-limit: 10
     commit-message:
       prefix: chore
       include: scope
+    groups:
+      gha:
+        patterns:
+          - "*"
   - package-ecosystem: gomod
     directory: /
     schedule:
       interval: weekly
-      time: "06:00"
-      timezone: UTC
+      # offset from the hour to avoid other build jobs
+      time: "06:34"
+      timezone: Etc/UTC
     allow:
       # direct and indirect updates
       - dependency-type: "all"
     commit-message:
       prefix: chore
       include: scope
+    groups:
+      gomod:
+        patterns:
+          - "*"
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
-      time: "06:00"
-      timezone: UTC
+      # offset from the hour to avoid other build jobs
+      time: "06:34"
+      timezone: Etc/UTC
     commit-message:
       prefix: chore
       include: scope
+    groups:
+      docker:
+        patterns:
+          - "*"
