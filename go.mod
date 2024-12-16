@@ -1,7 +1,6 @@
 module github.com/controlplaneio/badrobot
 
 go 1.23
-
 toolchain go1.23.3
 
 require (
@@ -9,7 +8,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/thedevsaddam/gojsonq/v2 v2.5.2
 	go.uber.org/zap v1.27.0
-	k8s.io/api v0.31.3
+	k8s.io/api v0.32.0
 )
 
 require (
@@ -28,10 +27,10 @@ require (
 	golang.org/x/text v0.21.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	k8s.io/apimachinery v0.31.3 // indirect
+	k8s.io/apimachinery v0.32.0 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/utils v0.0.0-20241104163129-6fe5fd82f078 // indirect
 	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
-	sigs.k8s.io/structured-merge-diff/v4 v4.4.3 // indirect
+	sigs.k8s.io/structured-merge-diff/v4 v4.5.0 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
