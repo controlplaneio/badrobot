@@ -1,4 +1,4 @@
-FROM golang:1.23.6-alpine AS builder
+FROM golang:1.24.0-alpine AS builder
 ARG VERSION=unknown
 ARG COMMIT=unknown
 
@@ -12,7 +12,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
 
 # ===
 
-FROM alpine:3.21.2
+FROM alpine:3.21.3
 
 RUN addgroup -S badrobot \
     && adduser -S -g badrobot badrobot \
