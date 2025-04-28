@@ -57,7 +57,7 @@ spec:
 	}
 	if matchedSecurityContext != 0 {
 		fmt.Printf("%v", matchedSecurityContext)
-		t.Errorf(fmt.Sprintf("Rule failed when it shouldn't with count %d", matchedSecurityContext))
+		t.Errorf("%s", fmt.Sprintf("Rule failed when it shouldn't with count %d", matchedSecurityContext))
 	}
 }
 
