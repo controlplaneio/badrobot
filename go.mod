@@ -9,7 +9,7 @@ require (
 	github.com/spf13/cobra v1.9.1
 	github.com/thedevsaddam/gojsonq/v2 v2.5.2
 	go.uber.org/zap v1.27.0
-	k8s.io/api v0.33.0
+	k8s.io/api v0.33.1
 )
 
 require (
@@ -27,7 +27,7 @@ require (
 	golang.org/x/text v0.25.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	k8s.io/apimachinery v0.33.0 // indirect
+	k8s.io/apimachinery v0.33.1 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/utils v0.0.0-20241104163129-6fe5fd82f078 // indirect
 	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
