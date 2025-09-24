@@ -32,7 +32,7 @@ jobs:
           submodules: true
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         id: go
         with:
           go-version-file: go.mod
