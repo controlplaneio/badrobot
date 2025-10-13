@@ -30,13 +30,13 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: go
 
       # analyzes + uploads sarif
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
 
   govulncheck:
     name: govulncheck
@@ -65,7 +65,7 @@ jobs:
           cat <<< $(jq '(.runs[] | select(.results == null) | .results) |= []' govulncheck.sarif) > govulncheck.sarif
 
       - name: Upload Scan SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: govulncheck.sarif
           category: govulncheck
