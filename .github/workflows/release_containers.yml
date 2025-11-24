@@ -30,7 +30,7 @@ jobs:
             ${{ runner.os }}${{ matrix.containers.suffix }}-buildx-
 
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Generate container tags and labels
         id: docker_meta
