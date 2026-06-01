@@ -43,7 +43,7 @@ Flags:
       --absolute-path       use the absolute path for the file name
       --debug               turn on debug logs
       --exit-code int       Set the exit-code to use on failure (default 2)
-  -f, --format string       Set output format (json, template) (default "json")
+  -f, --format string       Set output format (json, table, template) (default "json")
   -h, --help                help for scan
   -o, --output string       Set output location
       --schema-dir string   Sets the directory for the json schemas

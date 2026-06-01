@@ -27,7 +27,7 @@ _app() {
     # remove --json flags
     ARGS=$(echo "${ARGS}" | sed -E 's,--json,,g')
   fi
-  "${BIN_DIR}"/badrobot scan "${ARGS}";
+  "${BIN_DIR}"/badrobot scan -f json "${ARGS}";
 }
 
 assert_zero_points() {
