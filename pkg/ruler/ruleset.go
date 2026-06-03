@@ -328,16 +328,16 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, ModifyNamespacesClusterRole)
 
-	// OPR-R28-NS - No Pod Security Standard Baseline profile or stricter enforced for namespace
-	noPodSecurityStandardProfileRule := Rule{
-		Predicate: rules.NoPodSecurityStandardProfile,
-		ID:        "NoPodSecurityStandardProfile",
+	// OPR-R28-NS - Pod Security Standard Baseline profile or stricter should be enforced for namespace
+	podSecurityStandardProfileRule := Rule{
+		Predicate: rules.PodSecurityStandardProfile,
+		ID:        "PodSecurityStandardProfile",
 		Selector:  ".metadata .labels",
-		Reason:    "Pod Security Standard Baseline profile or stricter not enforced for Operator namespace",
+		Reason:    "Pod Security Standard Baseline profile or stricter should be enforced for Operator namespace",
 		Kinds:     []string{"Namespace"},
-		Points:    -16,
+		Points:    16,
 	}
-	list = append(list, noPodSecurityStandardProfileRule)
+	list = append(list, podSecurityStandardProfileRule)
 
 	return &Ruleset{
 		Rules:  list,

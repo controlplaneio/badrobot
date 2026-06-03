@@ -6,7 +6,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-func NoPodSecurityStandardProfile(input []byte) int {
+func PodSecurityStandardProfile(input []byte) int {
 	namespace := &corev1.Namespace{}
 	err := json.Unmarshal(input, namespace)
 	if err != nil {
@@ -15,9 +15,9 @@ func NoPodSecurityStandardProfile(input []byte) int {
 
 	if pssEnforcLabelValue, ok := namespace.Labels["pod-security.kubernetes.io/enforce"]; ok {
 		if pssEnforcLabelValue == "baseline" || pssEnforcLabelValue == "restricted" {
-			return 0
+			return 1
 		}
 	}
 
-	return 1
+	return 0
 }

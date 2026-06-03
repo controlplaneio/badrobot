@@ -20,9 +20,9 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	namespace := NoPodSecurityStandardProfile(json)
-	if namespace != 1 {
-		t.Errorf("Got %v namespaces wanted %v", namespace, 1)
+	namespace := PodSecurityStandardProfile(json)
+	if namespace != 0 {
+		t.Errorf("Got %v namespaces wanted %v", namespace, 0)
 	}
 }
 
@@ -42,9 +42,9 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	namespace := NoPodSecurityStandardProfile(json)
-	if namespace != 1 {
-		t.Errorf("Got %v namespaces wanted %v", namespace, 1)
+	namespace := PodSecurityStandardProfile(json)
+	if namespace != 0 {
+		t.Errorf("Got %v namespaces wanted %v", namespace, 0)
 	}
 }
 
@@ -64,8 +64,8 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	namespace := NoPodSecurityStandardProfile(json)
-	if namespace != 0 {
+	namespace := PodSecurityStandardProfile(json)
+	if namespace != 1 {
 		t.Errorf("Got %v namespaces wanted %v", namespace, 1)
 	}
 }
@@ -86,8 +86,8 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	namespace := NoPodSecurityStandardProfile(json)
-	if namespace != 0 {
+	namespace := PodSecurityStandardProfile(json)
+	if namespace != 1 {
 		t.Errorf("Got %v namespaces wanted %v", namespace, 1)
 	}
 }
@@ -108,8 +108,8 @@ metadata:
 		t.Fatal(err.Error())
 	}
 
-	namespace := NoPodSecurityStandardProfile(json)
-	if namespace != 1 {
-		t.Errorf("Got %v namespaces wanted %v", namespace, 1)
+	namespace := PodSecurityStandardProfile(json)
+	if namespace != 0 {
+		t.Errorf("Got %v namespaces wanted %v", namespace, 0)
 	}
 }
