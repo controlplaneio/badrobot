@@ -18,18 +18,18 @@ func PersistentVolumeClusterRole(input []byte) int {
 	}
 
 	for _, rule := range clusterRole.Rules {
-		if contains("", rule.APIGroups) &&
-			containsAll([]string{"persistentvolumes", "persistentvolumeclaims"}, rule.Resources) &&
+		if containsAny([]string{"*", ""}, rule.APIGroups) &&
+			(containsAll([]string{"persistentvolumes", "persistentvolumeclaims"}, rule.Resources) || contains("*", rule.Resources)) &&
 			containsAny([]string{"*", "get", "list", "create", "patch", "update", "delete", "deletecollection", "watch"}, rule.Verbs) {
 			rbac++
-		} else if contains("", rule.APIGroups) &&
+		} else if containsAny([]string{"*", ""}, rule.APIGroups) &&
 			contains("persistentvolumes", rule.Resources) &&
 			containsAny([]string{"*", "get", "list", "create", "patch", "update", "delete", "deletecollection", "watch"}, rule.Verbs) {
 			foundPV = true
 			if foundPV && foundPVC {
 				rbac++
 			}
-		} else if contains("", rule.APIGroups) &&
+		} else if containsAny([]string{"*", ""}, rule.APIGroups) &&
 			contains("persistentvolumeclaims", rule.Resources) &&
 			containsAny([]string{"*", "get", "list", "create", "patch", "update", "delete", "deletecollection", "watch"}, rule.Verbs) {
 			foundPVC = true

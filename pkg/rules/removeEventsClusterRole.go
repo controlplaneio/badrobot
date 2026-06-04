@@ -17,8 +17,8 @@ func RemoveEventsClusterRole(input []byte) int {
 	}
 
 	for _, rule := range clusterRole.Rules {
-		if contains("", rule.APIGroups) &&
-			contains("events", rule.Resources) &&
+		if containsAny([]string{"*", ""}, rule.APIGroups) &&
+			containsAny([]string{"*", "events"}, rule.Resources) &&
 			containsAny([]string{"*", "delete", "deletecollection"}, rule.Verbs) {
 			rbac++
 		}

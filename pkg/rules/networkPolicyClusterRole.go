@@ -17,7 +17,7 @@ func NetworkPolicyClusterRole(input []byte) int {
 	}
 
 	for _, rule := range clusterRole.Rules {
-		if contains("networking.k8s.io", rule.APIGroups) &&
+		if containsAny([]string{"*", "networking.k8s.io"}, rule.APIGroups) &&
 			containsAny([]string{"networkpolicy", "networkpolicies", "*"}, rule.Resources) &&
 			containsAny([]string{"*", "create", "update", "patch", "delete", "deletecollection"}, rule.Verbs) {
 			rbac++

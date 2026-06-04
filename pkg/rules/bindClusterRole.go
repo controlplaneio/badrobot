@@ -17,9 +17,9 @@ func BindClusterRole(input []byte) int {
 	}
 
 	for _, rule := range clusterRole.Rules {
-		if contains("rbac.authorization.k8s.io", rule.APIGroups) &&
-			contains("clusterroles", rule.Resources) &&
-			contains("bind", rule.Verbs) {
+		if containsAny([]string{"*", "rbac.authorization.k8s.io"}, rule.APIGroups) &&
+			containsAny([]string{"*", "clusterroles"}, rule.Resources) &&
+			containsAny([]string{"*", "bind"}, rule.Verbs) {
 			rbac++
 		}
 	}

@@ -19,19 +19,19 @@ func ExecPodsClusterRole(input []byte) int {
 	}
 
 	for _, rule := range clusterRole.Rules {
-		if contains("", rule.APIGroups) &&
+		if containsAny([]string{"*", ""}, rule.APIGroups) &&
 			containsAll([]string{"pods", "pods/exec"}, rule.Resources) &&
 			(contains("*", rule.Verbs) || containsAll([]string{"get", "create"}, rule.Verbs)) {
 			rbac++
-		} else if contains("", rule.APIGroups) &&
-			contains("pods", rule.Resources) &&
+		} else if containsAny([]string{"*", ""}, rule.APIGroups) &&
+			containsAny([]string{"*", "pods"}, rule.Resources) &&
 			containsAny([]string{"*", "get"}, rule.Verbs) {
 			foundPodsGet = true
 			if foundPodsGet && foundExecCreate {
 				rbac++
 			}
-		} else if contains("", rule.APIGroups) &&
-			contains("pods/exec", rule.Resources) &&
+		} else if containsAny([]string{"*", ""}, rule.APIGroups) &&
+			containsAny([]string{"*", "pods/exec"}, rule.Resources) &&
 			containsAny([]string{"*", "create"}, rule.Verbs) {
 			foundExecCreate = true
 			if foundPodsGet && foundExecCreate {

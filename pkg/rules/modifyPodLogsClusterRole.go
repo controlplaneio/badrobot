@@ -17,8 +17,8 @@ func ModifyPodLogsClusterRole(input []byte) int {
 	}
 
 	for _, rule := range clusterRole.Rules {
-		if contains("", rule.APIGroups) &&
-			contains("pods/log", rule.Resources) &&
+		if containsAny([]string{"*", ""}, rule.APIGroups) &&
+			containsAny([]string{"*", "pods/log"}, rule.Resources) &&
 			containsAny([]string{"*", "create", "patch", "update", "delete", "deletecollection"}, rule.Verbs) {
 			rbac++
 		}
