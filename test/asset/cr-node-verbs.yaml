@@ -9,4 +9,3 @@ rules:
   - nodes
   verbs:
   - get
-  - create

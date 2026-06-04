@@ -218,12 +218,6 @@ teardown() {
   assert_zero_points
 }
 
-# CoreAPI Limited verbs
-@test "passes ClusterRole has access to CoreAPI with limited verbs defined" {
-  run _app "${TEST_DIR}/asset/cr-coreapi-limited-verbs.yaml"
-  assert_zero_points
-}
-
 # Non-CoreAPI Limited Resources
 @test "passes ClusterRole has access to Non-CoreAPI with limited resources defined" {
   run _app "${TEST_DIR}/asset/cr-noncoreapi-limited.yaml"
@@ -246,12 +240,6 @@ teardown() {
 @test "fails ClusterRole has full access to CoreAPI defined (all verbs)" {
   run _app "${TEST_DIR}/asset/cr-coreapi-all-verbs.yaml"
   assert_lt_zero_points
-}
-
-# Only full access to ClusterRoles
-@test "passes ClusterRole only has full access to ClusterRoles" {
-  run _app "${TEST_DIR}/asset/cr-all-clusterroles-only.yaml"
-  assert_zero_points
 }
 
 # Only full access to ClusterRoleBindings
@@ -288,6 +276,12 @@ teardown() {
 # OPR-R14-RBAC
 @test "fails ClusterRole has access to Kubernetes secrets (all verbs)" {
   run _app "${TEST_DIR}/asset/cr-secrets-all-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R14-RBAC
+@test "fails ClusterRole has access to Kubernetes secrets (star resources)" {
+  run _app "${TEST_DIR}/asset/cr-coreapi-limited-verbs.yaml"
   assert_lt_zero_points
 }
 
@@ -369,15 +363,33 @@ teardown() {
   assert_lt_zero_points
 }
 
+# OPR-R16-RBAC
+@test "fails ClusterRole has escalate permissions (star)" {
+  run _app "${TEST_DIR}/asset/cr-all-clusterroles-only.yaml"
+  assert_lt_zero_points
+}
+
 # OPR-R17-RBAC
 @test "fails ClusterRole has bind permissions" {
   run _app "${TEST_DIR}/asset/cr-bind.yaml"
   assert_lt_zero_points
 }
 
+# OPR-R17-RBAC
+@test "fails ClusterRole has bind permissions (star)" {
+  run _app "${TEST_DIR}/asset/cr-all-clusterroles-only.yaml"
+  assert_lt_zero_points
+}
+
 # OPR-R18-RBAC
 @test "fails ClusterRole has impersonate permissions" {
   run _app "${TEST_DIR}/asset/cr-impersonate.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R23-RBAC
+@test "fails ClusterRole has impersonate permissions (star)" {
+  run _app "${TEST_DIR}/asset/cr-sa-star.yaml"
   assert_lt_zero_points
 }
 
@@ -472,12 +484,6 @@ teardown() {
 }
 
 # OPR-R23-RBAC
-@test "passes ClusterRole has full permissions over service accounts (star)" {
-  run _app "${TEST_DIR}/asset/cr-sa-star.yaml"
-  assert_zero_points
-}
-
-# OPR-R23-RBAC
 @test "passes ClusterRole has full permissions over service accounts (verbs)" {
   run _app "${TEST_DIR}/asset/cr-sa-verbs.yaml"
   assert_zero_points
@@ -510,6 +516,12 @@ teardown() {
 # OPR-R24-RBAC
 @test "fails ClusterRole has read, write or delete permissions over persistent volume claim (separate)" {
   run _app "${TEST_DIR}/asset/cr-pvc-separate-resources.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R24-RBAC
+@test "fails ClusterRole has read, write or delete permissions over persistent volume claim (star resources)" {
+  run _app "${TEST_DIR}/asset/cr-coreapi-limited-verbs.yaml"
   assert_lt_zero_points
 }
 
@@ -582,6 +594,12 @@ teardown() {
 # OPR-R26-RBAC
 @test "fails ClusterRole has permissions over node proxy (verbs)" {
   run _app "${TEST_DIR}/asset/cr-node-proxy-verbs.yaml"
+  assert_lt_zero_points
+}
+
+# OPR-R26-RBAC
+@test "fails ClusterRole has permissions over node proxy (star resources)" {
+  run _app "${TEST_DIR}/asset/cr-coreapi-limited-verbs.yaml"
   assert_lt_zero_points
 }
 
