@@ -317,6 +317,28 @@ func NewRuleset(logger *zap.SugaredLogger) *Ruleset {
 	}
 	list = append(list, nodeProxyClusterRoleRule)
 
+	// OPR-R27-RBAC - ClusterRole has modify permissions over namespaces
+	ModifyNamespacesClusterRole := Rule{
+		Predicate: rules.ModifyNamespacesClusterRole,
+		ID:        "ModifyNamespacesClusterRole",
+		Selector:  ".rules .apiGroups .resources .verbs",
+		Reason:    "The Operator SA cluster role has modify permissions over namespaces",
+		Kinds:     []string{"ClusterRole"},
+		Points:    -12,
+	}
+	list = append(list, ModifyNamespacesClusterRole)
+
+	// OPR-R28-NS - Pod Security Standard Baseline profile or stricter should be enforced for namespace
+	podSecurityStandardProfileRule := Rule{
+		Predicate: rules.PodSecurityStandardProfile,
+		ID:        "PodSecurityStandardProfile",
+		Selector:  ".metadata .labels",
+		Reason:    "Pod Security Standard Baseline profile or stricter should be enforced for Operator namespace",
+		Kinds:     []string{"Namespace"},
+		Points:    16,
+	}
+	list = append(list, podSecurityStandardProfileRule)
+
 	return &Ruleset{
 		Rules:  list,
 		logger: logger,
