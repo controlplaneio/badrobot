@@ -17,8 +17,8 @@ func AdmissionControllerClusterRole(input []byte) int {
 	}
 
 	for _, rule := range clusterRole.Rules {
-		if contains("admissionregistration.k8s.io", rule.APIGroups) &&
-			containsAny([]string{"mutatingwebhookconfigurations", "validatingwebhookconfigurations"}, rule.Resources) &&
+		if containsAny([]string{"*", "admissionregistration.k8s.io"}, rule.APIGroups) &&
+			containsAny([]string{"*", "mutatingwebhookconfigurations", "validatingwebhookconfigurations"}, rule.Resources) &&
 			containsAny([]string{"*", "create", "patch", "update", "delete", "deletecollection"}, rule.Verbs) {
 			rbac++
 		}

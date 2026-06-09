@@ -18,8 +18,8 @@ func ImpersonateClusterRole(input []byte) int {
 
 	for _, rule := range clusterRole.Rules {
 		if containsAny([]string{"", "*"}, rule.APIGroups) &&
-			contains("serviceaccounts", rule.Resources) &&
-			contains("impersonate", rule.Verbs) {
+			containsAny([]string{"serviceaccounts", "groups", "*"}, rule.Resources) &&
+			containsAny([]string{"*", "impersonate"}, rule.Verbs) {
 			rbac++
 		}
 	}

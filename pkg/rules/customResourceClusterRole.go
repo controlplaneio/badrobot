@@ -17,8 +17,8 @@ func CustomResourceClusterRole(input []byte) int {
 	}
 
 	for _, rule := range clusterRole.Rules {
-		if contains("apiextensions.k8s.io", rule.APIGroups) &&
-			contains("customresourcedefinitions", rule.Resources) &&
+		if containsAny([]string{"*", "apiextensions.k8s.io"}, rule.APIGroups) &&
+			containsAny([]string{"*", "customresourcedefinitions"}, rule.Resources) &&
 			containsAny([]string{"*", "create", "patch", "update", "delete", "deletecollection"}, rule.Verbs) {
 			rbac++
 		}

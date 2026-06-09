@@ -17,13 +17,9 @@ func NodeProxyClusterRole(input []byte) int {
 	}
 
 	for _, rule := range clusterRole.Rules {
-		if contains("", rule.APIGroups) &&
-			contains("nodes/proxy", rule.Resources) &&
-			contains("*", rule.Verbs) {
-			rbac++
-		} else if contains("", rule.APIGroups) &&
-			contains("nodes/proxy", rule.Resources) &&
-			containsAll([]string{"get", "create"}, rule.Verbs) {
+		if containsAny([]string{"*", ""}, rule.APIGroups) &&
+			containsAny([]string{"*", "nodes/proxy"}, rule.Resources) &&
+			containsAny([]string{"*", "get"}, rule.Verbs) {
 			rbac++
 		}
 	}

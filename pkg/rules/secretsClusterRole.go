@@ -17,8 +17,8 @@ func SecretsClusterRole(input []byte) int {
 	}
 
 	for _, rule := range clusterRole.Rules {
-		if contains("", rule.APIGroups) &&
-			contains("secrets", rule.Resources) &&
+		if containsAny([]string{"*", ""}, rule.APIGroups) &&
+			containsAny([]string{"*", "secrets"}, rule.Resources) &&
 			containsAny([]string{"*", "get", "create", "update", "list", "patch", "watch"}, rule.Verbs) {
 			rbac++
 		}
