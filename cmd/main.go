@@ -17,7 +17,9 @@ var rootCmd = &cobra.Command{
 	Use:   "badrobot",
 	Short: "badrobot command line",
 	Long: `
-Validate Kubernetes Operator resources for security risks`,
+Validate Kubernetes Operator resources for security risks
+
+Made with ❤ by https://control-plane.io/`,
 }
 
 // Execute runs badrobot

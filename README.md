@@ -117,3 +117,7 @@ There are plans to extend BadRobot in the future to consider the following manif
 1. kind: Role - The analysis of roles can be included to determine whether they are bound to a dedicated namespace, whether they only have access to specific custom resources, etc.
 2. kind: Namespace (Pod Security Standards) - The analysis could determine whether Pod Security Standards are applied for Kubernetes Clusters v1.23 and above.
 3. kind: NetworkPolicy - Analyse whether network policies are being applied to the Operator
+
+---
+
+Made with ❤ by [ControlPlane](https://control-plane.io/)
