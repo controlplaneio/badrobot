@@ -1,56 +1,39 @@
+# BadRobot
+
 ![BadRobot Logo](/doc/images/badrobot_logo.png)
 [![Security Analysis](https://github.com/controlplaneio/badrobot/actions/workflows/security_analysis.yml/badge.svg)](https://github.com/controlplaneio/badrobot/actions/workflows/security_analysis.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/controlplaneio/badrobot)](https://goreportcard.com/report/github.com/controlplaneio/badrobot)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/controlplaneio/badrobot)
 
+*Validate Kubernetes Operator resources for security risks.*
+
 BadRobot is a tool to perform security auditing of Kubernetes Operators. Operators are software extensions to Kubernetes that make use of custom resources to manage applications and their components. Operators follow Kubernetes principles, notably the control loop. These extensions usually run within the Kubernetes cluster, but they could just as well interact with the cluster from the outside with appropriate authentication.
 
-BadRobot statically analyses Operator manifest files for high risk configurations such as lack of security restrictions on the deployed controller and the permissions of an associated RBAC ClusterRole. The risk analysis that BadRobot evaluates is primarily focussed on the likelihood that a compromised Operator would be able to carry privilege escalation and obtain full control over every resource in the and in all namespaces.
+BadRobot statically analyses Operator manifest files for high risk configurations such as lack of security restrictions on the deployed controller and the permissions of an associated RBAC ClusterRole. The risk analysis that BadRobot evaluates is primarily focussed on the likelihood that a compromised Operator would be able to carry privilege escalation and obtain full control over every resource in the cluster and in all namespaces.
 
-- [Prerequisites](#prerequisites)
-- [Install](#install)
-  - [Go](#go-117)
-- [Command line Usage](#command-line-usage)
-  - [Usage Example](#usage-example)
-  - [Docker Usage](#docker-usage)
-- [Rulesets](#badrobot-rulesets)
-- [Roadmap](#roadmap)
+- [Quick Start](#-quick-start)
+- [Installation](#-installation)
+  - [Go (1.17+)](#go-117)
+  - [Download from GitHub Releases](#download-from-github-releases)
+  - [Build from Source](#build-from-source)
+  - [Docker Image](#docker-image)
+- [Usage Examples](#-usage-examples)
+  - [Scanning](#scanning)
+  - [Output Formats](#output-formats)
+  - [Scan Options](#scan-options)
+- [Rulesets](#-badrobot-rulesets)
 
+## 🎬 Demo
 
-## Prerequisites
-BadRobot requires the Operator manifests to be bundled into a single file, rather than scanning an entire directory structure and analysing individual manifests.
+<img src="doc/images/badrobot-demo.gif" alt="BadRobot CLI demo">
 
-## Install
-BadRobot can be run either as a container or as a local go binary. 
+## 🚀 Quick Start
 
-### Go 1.17+
+> **Note:** BadRobot requires the Operator manifests to be bundled into a single file, rather than scanning an entire directory structure and analysing individual manifests.
 
-```bash
-$ go install github.com/controlplaneio/badrobot@latest
-```
-## Command Line Usage
-```bash
-$ badrobot scan --help
-Scans Kubernetes Operator resource YAML or JSON
+### 1. Prepare Your Manifest
 
-Usage:
-  badrobot scan [file] [flags]
-
-Examples:
-  badrobot scan ./operator.yaml
-
-Flags:
-      --absolute-path       use the absolute path for the file name
-      --debug               turn on debug logs
-      --exit-code int       Set the exit-code to use on failure (default 2)
-  -f, --format string       Set output format (json, table, template) (default "json")
-  -h, --help                help for scan
-  -o, --output string       Set output location
-      --schema-dir string   Sets the directory for the json schemas
-  -t, --template string     Set output template, it will check for a file or read input as the
-```
-
-### Usage Example
+Bundle your Kubernetes Operator YAML resources into a single file (e.g., `operator.yaml`). For a quick test, you can save the following overly permissive `ClusterRole` to a file:
 
 ```bash
 $ cat <<EOF > operator.yaml
@@ -66,21 +49,149 @@ rules:
   verbs:
   - "*"
 EOF
-$ badrobot scan operator.yaml
 ```
 
-### Docker usage:
+### 2. Run Your First Scan
 
-Run the same command in Docker:
+Execute the scan against your bundled manifest file:
 
 ```bash
-$ docker run -i controlplane/badrobot scan /dev/stdin < operator.yaml
+# Using the local binary
+badrobot scan ./operator.yaml
+
+# Or using Docker
+docker run -i controlplane/badrobot scan /dev/stdin < operator.yaml
+
+# Using the local binary with human-readable table output format
+badrobot scan ./operator.yaml --format table
 ```
 
-## BadRobot Rulesets
+BadRobot will output a security analysis of the Operator, highlighting risky permissions and misconfigurations.
+
+## 📦 Installation
+
+BadRobot can be run either as a container or as a local Go binary.
+
+### Go 1.17+
+
+```bash
+go install github.com/controlplaneio/badrobot@latest
+```
+
+### Download from GitHub Releases
+
+Navigate to the [BadRobot Releases](https://github.com/controlplaneio/badrobot/releases) page and download the `.tar.gz` file corresponding to your operating system and architecture.
+
+```bash
+# Extract the archive (replace with your specific filename)
+tar -xzf badrobot_<os>_<arch>.tar.gz
+
+# Make the binary executable
+chmod +x badrobot
+
+# Move the binary to your PATH
+sudo mv badrobot /usr/local/bin/
+```
+
+### Build from Source
+
+```bash
+git clone https://github.com/controlplaneio/badrobot.git
+cd badrobot
+make build
+```
+
+### Docker Image
+
+You can use the BadRobot [Docker image](https://hub.docker.com/r/controlplane/badrobot) to run BadRobot as a container, e.g.:
+
+```bash
+docker run -i controlplane/badrobot scan /dev/stdin < operator.yaml
+```
+
+## 📖 Usage Examples
+
+### Scanning
+
+Scan Kubernetes Operator resources (YAML or JSON):
+
+```bash
+# Scan a specific operator YAML file locally
+badrobot scan ./operator.yaml
+
+# Scan a local file using its absolute path
+badrobot scan /full/path/to/operator.yaml --absolute-path
+
+# Scan a file via Docker using standard input
+docker run -i controlplane/badrobot scan /dev/stdin < operator.yaml
+```
+
+### Output Formats
+
+Customise the format and destination of your scan results:
+
+```bash
+# JSON output (default behaviour)
+badrobot scan ./operator.yaml --format json
+
+# Table output
+badrobot scan ./operator.yaml --format table
+
+# Save output to a specific file location
+badrobot scan ./operator.yaml --output results.json
+
+# Use a custom template for the output
+badrobot scan ./operator.yaml --format template --template report-template.tmpl
+```
+
+#### Example JSON Output
+
+```json
+[
+  {
+    "object": "ClusterRole/example-operator.default",
+    "valid": true,
+    "fileName": "./operator.yaml",
+    "message": "Failed with a score of -20 points",
+    "score": -20,
+    "scoring": {
+      "critical": [
+        {
+          "id": "ImpersonateClusterRole",
+          "selector": ".rules .apiGroups .resources .verbs",
+          "reason": "The Operator SA cluster role has impersonate permissions",
+          "points": -20
+        }
+      ]
+    }
+  },
+  ...
+]
+```
+
+#### Example Table Output
+
+![Table Output](/doc/images/table_output.png)
+
+### Scan Options
+
+Configure schemas, error handling, and logging:
+
+```bash
+# Set a custom directory for JSON schemas
+badrobot scan ./operator.yaml --schema-dir /path/to/schemas
+
+# Override the default exit code (2) on failure
+badrobot scan ./operator.yaml --exit-code 1
+
+# Turn on debug logs for troubleshooting
+badrobot scan ./operator.yaml --debug
+```
+
+## 🤖 BadRobot Rulesets
 
 | RuleSet ID | Rule | Risk | Risk Level |
-|-----|-----|-----|-----|
+|------------|------|------|------------|
 | OPR-R1-NS | default Namespace | The Operator is deployed onto the default namespace. Operators should be deployed into a dedicated namespace to reduce the exposure of other sensitive information or workloads in the event of compromise. The default namespace is where applications and services are deployed if the namespaces is not specified. A compromised application container could pivot to the Operator which may allow an adversary to obtain cluster wide permissions. | Low |
 | OPR-R2-NS | kube-system Namespace | The Operator is deployed onto the kube-system namespace. Operators should be deployed into a dedicated namespace to reduce the exposure of other sensitive information or workloads in the event of compromise. The kube-system namespace is reserved for Kubernetes engine and the Operator should not be deployed here. | High |
 | OPR-R3-SC | No securityContext | The Operator is deployed without a securityContext. In the event the Operator is compromised, the adversary could have unrestricted access to resources on the underlying host. Unless the Operator is performing highly permissive cluster configuration and management of resources, it is highly recommended that some restrictions be applied. | High |
@@ -109,14 +220,6 @@ $ docker run -i controlplane/badrobot scan /dev/stdin < operator.yaml
 | OPR-R26-RBAC | ClusterRole has permissions over the Kubernetes API server proxy | The Operator is deployed with permissions over the proxy sub resource of the node, allowing command execution on every pod on the node via the Kubelet API. An adversary can leverage this permission on the Operator to run custom workloads on several pods on the node. | High |
 | OPR-R27-RBAC | ClusterRole has modify permissions over namespaces | The Operator is deployed with permissions to modify labels on Namespace objects. In clusters where Pod Security Admission is used, an adversary might leverage this permission on the operator to configure the namespace for a more permissive policy than intended by the administrators. For clusters where NetworkPolicy is used, the permission may be abused to set labels that indirectly allow access to services that an administrator did not intend to allow. | High |
 | OPR-R28-NS | Pod Security Standard Baseline profile or stricter should be enforced for Operator namespace | Enforcing a 'baseline' or 'restricted' Pod Security Standards (PSS) profile for the Operator namespace limits the use of containers with access to underlying cluster nodes, via mechanisms like privileged containers, or the use of hostPath volume mounts. | High |
-
----
-## Roadmap
-There are plans to extend BadRobot in the future to consider the following manifests:
-
-1. kind: Role - The analysis of roles can be included to determine whether they are bound to a dedicated namespace, whether they only have access to specific custom resources, etc.
-2. kind: Namespace (Pod Security Standards) - The analysis could determine whether Pod Security Standards are applied for Kubernetes Clusters v1.23 and above.
-3. kind: NetworkPolicy - Analyse whether network policies are being applied to the Operator
 
 ---
 
