@@ -1,6 +1,6 @@
 ---
 name: Security Analysis
-
+permissions: {}
 on:
   push:
     branches: [master]
@@ -27,16 +27,18 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@3ea06614dafe36dec890db3446326e0d40ce53d4 # v3.38.1
         with:
           languages: go
 
       # analyzes + uploads sarif
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@3ea06614dafe36dec890db3446326e0d40ce53d4 # v3.38.1
 
   govulncheck:
     name: govulncheck
@@ -46,10 +48,12 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Vulnerability Scan Go Code
-        uses: golang/govulncheck-action@v1
+        uses: golang/govulncheck-action@032d45514ae346b1db93c04b0c90b841c370344f # v1.1.0
         with:
           go-version-file: go.mod
           repo-checkout: false
@@ -65,7 +69,7 @@ jobs:
           cat <<< $(jq '(.runs[] | select(.results == null) | .results) |= []' govulncheck.sarif) > govulncheck.sarif
 
       - name: Upload Scan SARIF file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@3ea06614dafe36dec890db3446326e0d40ce53d4 # v3.38.1
         with:
           sarif_file: govulncheck.sarif
           category: govulncheck

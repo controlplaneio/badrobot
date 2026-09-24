@@ -16,6 +16,8 @@ updates:
       gha:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
   - package-ecosystem: gomod
     directory: /
     schedule:
@@ -33,6 +35,8 @@ updates:
       gomod:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
   - package-ecosystem: docker
     directory: /
     schedule:
@@ -47,3 +51,5 @@ updates:
       docker:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
